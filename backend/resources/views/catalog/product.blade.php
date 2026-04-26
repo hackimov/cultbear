@@ -3,22 +3,68 @@
 @section('content')
     <section class="mx-auto max-w-7xl px-4 py-10">
         @php
-            $primaryMedia = $product->media->firstWhere('is_primary', true) ?? $product->media->first();
-            $mediaPath = $primaryMedia?->webp_path ?: $primaryMedia?->preview_path ?: $primaryMedia?->path;
-            $mediaDisk = $primaryMedia?->disk ?: 's3';
+            $imageUrls = $product->media
+                ->sortByDesc(fn ($media) => (bool) $media->is_primary)
+                ->map(function ($media): ?string {
+                    $mediaPath = $media->webp_path ?: $media->preview_path ?: $media->path;
 
-            $imageUrl = null;
-            if ($mediaPath) {
-                $imageUrl = filter_var($mediaPath, FILTER_VALIDATE_URL)
-                    ? $mediaPath
-                    : \Illuminate\Support\Facades\Storage::disk($mediaDisk)->url($mediaPath);
-            }
+                    if (! $mediaPath) {
+                        return null;
+                    }
+
+                    if (filter_var($mediaPath, FILTER_VALIDATE_URL)) {
+                        return $mediaPath;
+                    }
+
+                    return \Illuminate\Support\Facades\Storage::disk($media->disk ?: 's3')->url($mediaPath);
+                })
+                ->filter()
+                ->values()
+                ->all();
         @endphp
 
         <div class="grid gap-8 md:grid-cols-2">
             <div class="rounded-2xl bg-zinc-100 p-8">
-                @if($imageUrl)
-                    <img src="{{ $imageUrl }}" alt="{{ $product->name }}" class="aspect-square w-full rounded-xl object-cover">
+                @if(! empty($imageUrls))
+                    <div
+                        x-data="{ images: @js($imageUrls), activeIndex: 0 }"
+                        class="space-y-3"
+                    >
+                        <div class="relative">
+                            <img
+                                :src="images[activeIndex]"
+                                alt="{{ $product->name }}"
+                                class="aspect-square w-full rounded-xl object-cover"
+                            >
+
+                            <button
+                                type="button"
+                                @click="activeIndex = (activeIndex - 1 + images.length) % images.length"
+                                class="absolute left-3 top-1/2 -translate-y-1/2 rounded-full bg-white/90 px-3 py-1 text-xl font-semibold text-zinc-800 shadow"
+                                aria-label="Предыдущее фото"
+                            >‹</button>
+
+                            <button
+                                type="button"
+                                @click="activeIndex = (activeIndex + 1) % images.length"
+                                class="absolute right-3 top-1/2 -translate-y-1/2 rounded-full bg-white/90 px-3 py-1 text-xl font-semibold text-zinc-800 shadow"
+                                aria-label="Следующее фото"
+                            >›</button>
+                        </div>
+
+                        <div class="grid grid-cols-5 gap-2">
+                            <template x-for="(image, index) in images" :key="image + index">
+                                <button
+                                    type="button"
+                                    @click="activeIndex = index"
+                                    class="overflow-hidden rounded-lg border-2 transition"
+                                    :class="activeIndex === index ? 'border-black' : 'border-transparent'"
+                                >
+                                    <img :src="image" alt="" class="aspect-square w-full object-cover">
+                                </button>
+                            </template>
+                        </div>
+                    </div>
                 @else
                     <div class="aspect-square rounded-xl bg-zinc-200"></div>
                 @endif
