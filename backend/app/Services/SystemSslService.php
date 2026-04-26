@@ -23,9 +23,10 @@ class SystemSslService
 
         $certPath = '/etc/letsencrypt/live/'.$domains[0].'/fullchain.pem';
         if (! is_readable($certPath)) {
-            logger()->info('local env: SSL not required (missing cert: '.$certPath.')');
-
-            return;
+            throw new RuntimeException(
+                'Выпуск Let\'s Encrypt (certbot) выполняется только при APP_ENV=production (сейчас: «'.config('app.env').'»). '.
+                'В backend/.env задайте APP_ENV=production, пересоздайте контейнер app (docker compose up -d --force-recreate app) и снова выполните php artisan system:ssl.'
+            );
         }
 
         $this->reloadNginx($domains[0]);
