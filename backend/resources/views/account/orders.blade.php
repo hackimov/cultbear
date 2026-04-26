@@ -1,7 +1,7 @@
 @extends('layouts.app', ['title' => 'Мои заказы — CultBear'])
 
 @section('content')
-<section class="mx-auto w-full max-w-5xl px-4 py-12 md:py-16">
+<section class="mx-auto w-full max-w-7xl px-4 py-12 md:py-16">
     <h1 class="text-3xl font-black">Мои заказы</h1>
 
     @if($orders->isEmpty())

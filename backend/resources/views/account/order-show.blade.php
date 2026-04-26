@@ -1,7 +1,7 @@
 @extends('layouts.app', ['title' => ($order->number ?? 'Заказ').' — CultBear'])
 
 @section('content')
-<section class="mx-auto w-full max-w-5xl px-4 py-12 md:py-16">
+<section class="mx-auto w-full max-w-7xl px-4 py-12 md:py-16">
     <a href="/account/orders" class="text-sm underline">Назад к списку заказов</a>
 
     <h1 class="mt-4 text-3xl font-black">Заказ {{ $order->number }}</h1>

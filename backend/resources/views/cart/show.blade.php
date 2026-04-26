@@ -1,7 +1,7 @@
 @extends('layouts.app', ['title' => 'Корзина — CultBear'])
 
 @section('content')
-<section class="mx-auto w-full max-w-5xl px-4 py-12 md:py-16">
+<section class="mx-auto w-full max-w-7xl px-4 py-12 md:py-16">
     <h1 class="text-3xl font-black">Корзина</h1>
 
     @if($items->isEmpty())
