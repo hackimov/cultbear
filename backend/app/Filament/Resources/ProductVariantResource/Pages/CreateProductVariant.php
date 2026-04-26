@@ -2,11 +2,10 @@
 
 namespace App\Filament\Resources\ProductVariantResource\Pages;
 
+use App\Filament\Resources\Pages\BaseCreateRecord;
 use App\Filament\Resources\ProductVariantResource;
-use Filament\Actions;
-use Filament\Resources\Pages\CreateRecord;
 
-class CreateProductVariant extends CreateRecord
+class CreateProductVariant extends BaseCreateRecord
 {
     protected static string $resource = ProductVariantResource::class;
 }

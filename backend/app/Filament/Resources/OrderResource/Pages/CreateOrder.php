@@ -2,11 +2,10 @@
 
 namespace App\Filament\Resources\OrderResource\Pages;
 
+use App\Filament\Resources\Pages\BaseCreateRecord;
 use App\Filament\Resources\OrderResource;
-use Filament\Actions;
-use Filament\Resources\Pages\CreateRecord;
 
-class CreateOrder extends CreateRecord
+class CreateOrder extends BaseCreateRecord
 {
     protected static string $resource = OrderResource::class;
 }

@@ -14,6 +14,15 @@ use Spatie\Permission\Models\Role;
 
 class UserResource extends Resource
 {
+    protected static function roleTitle(string $name): string
+    {
+        return match ($name) {
+            'super_admin' => 'Супер-администратор',
+            'admin' => 'Администратор',
+            default => $name,
+        };
+    }
+
     protected static ?string $model = User::class;
 
     protected static ?string $navigationIcon = 'heroicon-o-users';
@@ -49,7 +58,12 @@ class UserResource extends Resource
                 Forms\Components\Select::make('roles')
                     ->label('Роли')
                     ->relationship('roles', 'name')
-                    ->options(Role::query()->pluck('name', 'name'))
+                    ->options(
+                        Role::query()
+                            ->orderBy('name')
+                            ->pluck('name')
+                            ->mapWithKeys(fn (string $name): array => [$name => static::roleTitle($name)])
+                    )
                     ->preload()
                     ->multiple()
                     ->required()
@@ -67,8 +81,12 @@ class UserResource extends Resource
                 Tables\Columns\TextColumn::make('roles.name')
                     ->label('Роли')
                     ->badge()
+                    ->formatStateUsing(fn (?string $state): string => $state ? static::roleTitle($state) : '—')
                     ->separator(','),
-                Tables\Columns\TextColumn::make('created_at')->label('Создан')->dateTime()->sortable(),
+                Tables\Columns\TextColumn::make('created_at')
+                    ->label('Создан')
+                    ->dateTime('d.m.Y H:i')
+                    ->sortable(),
             ])
             ->filters([
             ])
