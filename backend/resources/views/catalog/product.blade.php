@@ -192,6 +192,13 @@
             font-size: 0.95rem;
             line-height: 1.2;
             outline: none;
+            appearance: textfield;
+        }
+
+        .product-qty-input::-webkit-outer-spin-button,
+        .product-qty-input::-webkit-inner-spin-button {
+            -webkit-appearance: none;
+            margin: 0;
         }
 
         .product-primary-btn,
