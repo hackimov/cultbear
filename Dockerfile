@@ -25,4 +25,8 @@ RUN apk add --no-cache \
 
 COPY --from=composer:2 /usr/bin/composer /usr/bin/composer
 
+COPY docker/php/docker-entrypoint.sh /usr/local/bin/cultbear-app-entrypoint
+RUN chmod +x /usr/local/bin/cultbear-app-entrypoint
+
+ENTRYPOINT ["/usr/local/bin/cultbear-app-entrypoint"]
 CMD ["php-fpm"]

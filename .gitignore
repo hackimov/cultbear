@@ -3,3 +3,7 @@
 /.env.backup
 /.env.production
 .idea/
+
+# Архивы для выкладки на сервер (не коммитить)
+/cultbear-deploy.tar.gz
+/cultbear-deploy.zip
