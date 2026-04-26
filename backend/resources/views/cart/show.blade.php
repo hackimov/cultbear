@@ -65,6 +65,61 @@
         gap: 0.875rem;
     }
 
+    .checkout-address-wrap {
+        position: relative;
+    }
+
+    .checkout-address-suggestions {
+        position: absolute;
+        left: 0;
+        right: 0;
+        top: calc(100% + 0.35rem);
+        z-index: 30;
+        border: 1px solid #d4d4d8;
+        border-radius: 0.75rem;
+        background: #fff;
+        box-shadow: 0 12px 24px rgba(0, 0, 0, 0.08);
+        max-height: 260px;
+        overflow: auto;
+    }
+
+    .checkout-address-suggestion {
+        width: 100%;
+        text-align: left;
+        padding: 0.625rem 0.75rem;
+        border: 0;
+        background: #fff;
+        font-size: 0.875rem;
+        line-height: 1.25;
+    }
+
+    .checkout-address-suggestion + .checkout-address-suggestion {
+        border-top: 1px solid #f4f4f5;
+    }
+
+    .checkout-address-suggestion:hover {
+        background: #fafafa;
+    }
+
+    .checkout-submit-wrap {
+        margin-top: 1.25rem;
+    }
+
+    .checkout-submit-btn {
+        width: 100%;
+        border-radius: 0.875rem;
+        background: #000;
+        color: #fff;
+        padding: 0.75rem 1.5rem;
+        font-size: 0.95rem;
+        font-weight: 600;
+        line-height: 1.2;
+    }
+
+    .checkout-submit-btn:hover {
+        background: #27272a;
+    }
+
     @media (min-width: 1024px) {
         .checkout-layout {
             grid-template-columns: minmax(0, 1fr) 380px;
@@ -175,9 +230,21 @@
                             <input id="checkout_phone" name="phone" required value="{{ old('phone', $user?->phone) }}" class="w-full rounded-xl border border-zinc-300 px-3 py-2.5 text-sm">
                         </div>
 
-                        <div>
+                        <div class="checkout-address-wrap">
                             <label for="checkout_address_line" class="mb-1 block text-sm font-semibold">Адрес доставки</label>
-                            <input id="checkout_address_line" name="address_line" required value="{{ old('address_line', $user?->address_line) }}" placeholder="Улица, дом, квартира" class="w-full rounded-xl border border-zinc-300 px-3 py-2.5 text-sm">
+                            <input
+                                id="checkout_address_line"
+                                name="address_line"
+                                required
+                                value="{{ old('address_line', $user?->address_line) }}"
+                                placeholder="Улица, дом, квартира"
+                                class="w-full rounded-xl border border-zinc-300 px-3 py-2.5 text-sm"
+                                autocomplete="off"
+                                data-address-input
+                                data-city-target="#checkout_city"
+                                data-postal-target="#checkout_postal_code"
+                            >
+                            <div class="checkout-address-suggestions hidden" data-address-suggestions></div>
                         </div>
 
                         <div class="grid gap-3 sm:grid-cols-2">
@@ -192,9 +259,9 @@
                         </div>
                     </div>
 
-                    <button type="submit" class="mt-5 w-full rounded-xl bg-black px-6 py-3 text-sm font-semibold text-white hover:bg-zinc-800">
-                        Перейти к оплате
-                    </button>
+                    <div class="checkout-submit-wrap">
+                        <button type="submit" class="checkout-submit-btn">Перейти к оплате</button>
+                    </div>
                 </form>
             </aside>
         </div>
@@ -220,6 +287,97 @@
                 const current = Math.max(1, Number(qtyInput.value || 1) + 1);
                 qtyInput.value = String(current);
             });
+        });
+
+        const addressInput = document.querySelector('[data-address-input]');
+        const suggestionsWrap = document.querySelector('[data-address-suggestions]');
+        const cityTarget = document.querySelector(addressInput?.dataset.cityTarget || '');
+        const postalTarget = document.querySelector(addressInput?.dataset.postalTarget || '');
+
+        if (!addressInput || !suggestionsWrap) {
+            return;
+        }
+
+        let debounceTimer = null;
+        let lastQuery = '';
+
+        const hideSuggestions = () => {
+            suggestionsWrap.classList.add('hidden');
+            suggestionsWrap.innerHTML = '';
+        };
+
+        const renderSuggestions = (items) => {
+            if (!Array.isArray(items) || items.length === 0) {
+                hideSuggestions();
+                return;
+            }
+
+            suggestionsWrap.innerHTML = '';
+            items.forEach((item) => {
+                const button = document.createElement('button');
+                button.type = 'button';
+                button.className = 'checkout-address-suggestion';
+                button.textContent = item.value || '';
+                button.addEventListener('click', () => {
+                    addressInput.value = item.value || '';
+                    if (cityTarget) {
+                        cityTarget.value = item.data?.city || '';
+                    }
+                    if (postalTarget) {
+                        postalTarget.value = item.data?.postal_code || '';
+                    }
+                    hideSuggestions();
+                });
+                suggestionsWrap.appendChild(button);
+            });
+
+            suggestionsWrap.classList.remove('hidden');
+        };
+
+        const fetchSuggestions = async (query) => {
+            try {
+                const response = await fetch(`/checkout/address-suggestions?query=${encodeURIComponent(query)}`, {
+                    headers: { 'Accept': 'application/json' },
+                });
+                if (!response.ok) {
+                    hideSuggestions();
+                    return;
+                }
+
+                const payload = await response.json();
+                renderSuggestions(payload?.suggestions || []);
+            } catch (error) {
+                hideSuggestions();
+            }
+        };
+
+        addressInput.addEventListener('input', () => {
+            const query = addressInput.value.trim();
+            if (query.length < 3) {
+                lastQuery = '';
+                hideSuggestions();
+                return;
+            }
+
+            if (query === lastQuery) {
+                return;
+            }
+
+            if (debounceTimer) {
+                clearTimeout(debounceTimer);
+            }
+
+            debounceTimer = setTimeout(() => {
+                lastQuery = query;
+                fetchSuggestions(query);
+            }, 350);
+        });
+
+        document.addEventListener('click', (event) => {
+            if (event.target === addressInput || suggestionsWrap.contains(event.target)) {
+                return;
+            }
+            hideSuggestions();
         });
     })();
 </script>
