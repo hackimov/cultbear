@@ -53,9 +53,16 @@
     <section class="mx-auto max-w-7xl px-4 py-10">
         <h1 class="text-3xl font-black">{{ $theme->name }}</h1>
         <p class="mt-2 text-zinc-600">{{ $theme->description }}</p>
+        @php($firstThemeProduct = $products->first())
         @if($theme->banner_src)
             <div class="mt-6 overflow-hidden rounded-xl border border-zinc-200">
-                <img src="{{ $theme->banner_src }}" alt="{{ $theme->name }}" class="h-48 w-full object-cover md:h-64">
+                @if($firstThemeProduct)
+                    <a href="/products/{{ $firstThemeProduct->slug }}" aria-label="Открыть первый товар тематики {{ $theme->name }}">
+                        <img src="{{ $theme->banner_src }}" alt="{{ $theme->name }}" class="h-48 w-full object-cover md:h-64">
+                    </a>
+                @else
+                    <img src="{{ $theme->banner_src }}" alt="{{ $theme->name }}" class="h-48 w-full object-cover md:h-64">
+                @endif
             </div>
         @endif
 
