@@ -28,6 +28,7 @@ class CartController extends Controller
             'cart' => $cart,
             'items' => $items,
             'total' => $total,
+            'user' => $request->user(),
         ]);
     }
 
@@ -65,7 +66,7 @@ class CartController extends Controller
         return redirect('/cart')->with('status', 'Товар добавлен в корзину.');
     }
 
-    public function updateItem(Request $request, int $id): JsonResponse
+    public function updateItem(Request $request, int $id): JsonResponse|RedirectResponse
     {
         $validated = $request->validate([
             'quantity' => ['required', 'integer', 'min:1'],
@@ -75,20 +76,32 @@ class CartController extends Controller
         $item = $cart->items()->whereKey($id)->firstOrFail();
 
         if ($item->variant->stock_quantity < $validated['quantity']) {
-            return response()->json(['message' => 'Недостаточно товара на складе.'], 422);
+            if ($request->expectsJson()) {
+                return response()->json(['message' => 'Недостаточно товара на складе.'], 422);
+            }
+
+            return back()->with('error', 'Недостаточно товара на складе для выбранного варианта.');
         }
 
         $item->update(['quantity' => $validated['quantity']]);
 
-        return response()->json($item);
+        if ($request->expectsJson()) {
+            return response()->json($item);
+        }
+
+        return back()->with('status', 'Количество товара обновлено.');
     }
 
-    public function destroyItem(Request $request, int $id): JsonResponse
+    public function destroyItem(Request $request, int $id): JsonResponse|RedirectResponse
     {
         $cart = $this->resolveCart($request);
         $cart->items()->whereKey($id)->delete();
 
-        return response()->json(status: 204);
+        if ($request->expectsJson()) {
+            return response()->json(status: 204);
+        }
+
+        return back()->with('status', 'Товар удален из корзины.');
     }
 
     private function resolveCart(Request $request): Cart

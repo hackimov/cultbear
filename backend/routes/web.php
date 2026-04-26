@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\Account\OrderController as AccountOrderController;
+use App\Http\Controllers\Account\ProfileController;
 use App\Http\Controllers\AddressSuggestionController;
 use App\Http\Controllers\CartController;
 use App\Http\Controllers\CatalogController;
@@ -45,6 +46,8 @@ Route::get('/t-shirt.png', fn () => response()->file(resource_path('images/t-shi
 ]));
 
 Route::middleware('auth')->prefix('/account')->group(function () {
+    Route::get('/profile', [ProfileController::class, 'edit']);
+    Route::put('/profile', [ProfileController::class, 'update']);
     Route::get('/orders', [AccountOrderController::class, 'index']);
     Route::get('/orders/{id}', [AccountOrderController::class, 'show']);
 });

@@ -25,7 +25,8 @@
                 <a href="/contacts">Контакты</a>
                 <a href="/cart">Корзина</a>
                 @auth
-                    <a href="/account/orders">Профиль</a>
+                    <a href="/account/profile">Профиль</a>
+                    <a href="/account/orders">Заказы</a>
                     <form method="POST" action="{{ route('logout') }}" class="inline">
                         @csrf
                         <button type="submit" class="text-sm">Выйти</button>
@@ -48,7 +49,8 @@
                 <a href="/contacts">Контакты</a>
                 <a href="/cart">Корзина</a>
                 @auth
-                    <a href="/account/orders">Профиль</a>
+                    <a href="/account/profile">Профиль</a>
+                    <a href="/account/orders">Заказы</a>
                     <form method="POST" action="{{ route('logout') }}" class="inline">
                         @csrf
                         <button type="submit" class="text-left">Выйти</button>
