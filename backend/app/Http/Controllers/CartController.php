@@ -15,7 +15,7 @@ class CartController extends Controller
     public function show(Request $request): JsonResponse | View
     {
         $cart = $this->resolveCart($request);
-        $cart->load('items.variant.product');
+        $cart->load('items.variant.product.media');
 
         if ($request->expectsJson()) {
             return response()->json($cart);

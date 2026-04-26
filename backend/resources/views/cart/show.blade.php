@@ -30,6 +30,34 @@
         gap: 0.875rem;
     }
 
+    .checkout-item-head {
+        display: grid;
+        grid-template-columns: 72px minmax(0, 1fr);
+        gap: 0.875rem;
+        align-items: start;
+    }
+
+    .checkout-item-thumb {
+        width: 72px;
+        height: 72px;
+        border-radius: 0.75rem;
+        overflow: hidden;
+        background: #f4f4f5;
+        border: 1px solid #e4e4e7;
+        flex-shrink: 0;
+    }
+
+    .checkout-item-thumb img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        display: block;
+    }
+
+    .checkout-item-meta {
+        min-width: 0;
+    }
+
     .checkout-qty-controls {
         display: inline-flex;
         align-items: center;
@@ -182,12 +210,33 @@
                 @foreach($items as $item)
                     <article class="checkout-item">
                         <div class="checkout-item-grid">
-                            <div>
-                                <p class="text-xs text-zinc-500">{{ $item->variant->product->article ?? '—' }}</p>
-                                <h3 class="mt-1 text-lg font-semibold">{{ $item->variant->product->name ?? 'Товар' }}</h3>
-                                <p class="mt-1 text-sm text-zinc-600">
-                                    {{ $item->variant->model ?? '-' }} / {{ $item->variant->size ?? '-' }} / {{ $item->variant->color ?? '-' }}
-                                </p>
+                            <div class="checkout-item-head">
+                                @php
+                                    $productMedia = $item->variant?->product?->media
+                                        ?->sortByDesc(fn ($media) => (bool) $media->is_primary)
+                                        ->first();
+                                    $thumbPath = $productMedia?->webp_path ?: $productMedia?->preview_path ?: $productMedia?->path;
+                                    $thumbUrl = null;
+                                    if ($thumbPath) {
+                                        $thumbUrl = filter_var($thumbPath, FILTER_VALIDATE_URL)
+                                            ? $thumbPath
+                                            : \Illuminate\Support\Facades\Storage::disk($productMedia?->disk ?: 's3')->url($thumbPath);
+                                    }
+                                @endphp
+
+                                <div class="checkout-item-thumb">
+                                    @if($thumbUrl)
+                                        <img src="{{ $thumbUrl }}" alt="{{ $item->variant->product->name ?? 'Товар' }}">
+                                    @endif
+                                </div>
+
+                                <div class="checkout-item-meta">
+                                    <p class="text-xs text-zinc-500">{{ $item->variant->product->article ?? '—' }}</p>
+                                    <h3 class="mt-1 text-lg font-semibold">{{ $item->variant->product->name ?? 'Товар' }}</h3>
+                                    <p class="mt-1 text-sm text-zinc-600">
+                                        {{ $item->variant->model ?? '-' }} / {{ $item->variant->size ?? '-' }} / {{ $item->variant->color ?? '-' }}
+                                    </p>
+                                </div>
                             </div>
 
                             <div class="flex flex-wrap items-center justify-between gap-3">
