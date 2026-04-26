@@ -2,7 +2,7 @@
 
 @section('content')
 <section class="mx-auto w-full max-w-7xl px-4 py-12 md:py-16">
-<div class="w-full rounded-2xl border border-zinc-200 bg-white p-6 md:p-8" style="max-width: 28rem;">
+<div class="mx-auto w-full rounded-2xl border border-zinc-200 bg-white p-6 md:p-8" style="max-width: 28rem;">
     <h1 class="text-2xl font-semibold text-zinc-900">Подтверждение входа</h1>
     <p class="mt-2 text-sm text-zinc-600">Введите код из приложения или один резервный код.</p>
 
