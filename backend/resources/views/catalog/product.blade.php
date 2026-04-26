@@ -25,6 +25,84 @@
             max-height: 640px;
         }
 
+        .product-carousel-arrow {
+            position: absolute;
+            top: 50%;
+            z-index: 10;
+            width: 40px;
+            height: 40px;
+            transform: translateY(-50%);
+            border-radius: 9999px;
+            border: 1px solid #e4e4e7;
+            background: rgba(255, 255, 255, 0.95);
+            color: #18181b;
+            cursor: pointer;
+            box-shadow: 0 1px 2px rgba(0, 0, 0, 0.08);
+        }
+
+        .product-carousel-arrow-left {
+            left: 0.75rem;
+        }
+
+        .product-carousel-arrow-right {
+            right: 0.75rem;
+        }
+
+        .product-carousel-thumbs {
+            display: none;
+            gap: 0.5rem;
+            overflow-x: auto;
+            padding: 0.25rem 0;
+        }
+
+        .product-carousel-thumb {
+            width: 56px;
+            height: 56px;
+            flex: 0 0 auto;
+            overflow: hidden;
+            border: 2px solid transparent;
+            border-radius: 0.625rem;
+            background: #fff;
+            cursor: pointer;
+            transition: border-color 0.2s ease;
+        }
+
+        .product-carousel-thumb img {
+            display: block;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .product-carousel-thumb.is-active {
+            border-color: #18181b;
+        }
+
+        .product-carousel-dots {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .product-carousel-dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 9999px;
+            background: #d4d4d8;
+            cursor: pointer;
+            transition: background-color 0.2s ease;
+        }
+
+        .product-carousel-dot.is-active {
+            background: #18181b;
+        }
+
+        @media (min-width: 640px) {
+            .product-carousel-thumbs {
+                display: flex;
+            }
+        }
+
         @media (min-width: 1024px) {
             .product-layout {
                 grid-template-columns: minmax(0, 1fr) 380px;
@@ -69,14 +147,14 @@
                         @if(count($imageUrls) > 1)
                             <button
                                 type="button"
-                                class="absolute left-3 top-1/2 z-10 inline-flex h-10 w-10 -translate-y-1/2 items-center justify-center rounded-full border border-zinc-200 bg-white/95 text-lg font-semibold text-zinc-900 shadow-sm transition hover:bg-white"
+                                class="product-carousel-arrow product-carousel-arrow-left"
                                 aria-label="Предыдущее фото"
                                 data-carousel-prev
                             >&larr;</button>
 
                             <button
                                 type="button"
-                                class="absolute right-3 top-1/2 z-10 inline-flex h-10 w-10 -translate-y-1/2 items-center justify-center rounded-full border border-zinc-200 bg-white/95 text-lg font-semibold text-zinc-900 shadow-sm transition hover:bg-white"
+                                class="product-carousel-arrow product-carousel-arrow-right"
                                 aria-label="Следующее фото"
                                 data-carousel-next
                             >&rarr;</button>
@@ -85,9 +163,9 @@
 
                     @if(count($imageUrls) > 1)
                         <div class="mt-4 space-y-3">
-                            <div class="hidden gap-2 overflow-x-auto py-1 sm:flex" data-carousel-thumbs></div>
+                            <div class="product-carousel-thumbs" data-carousel-thumbs></div>
                             <div class="flex items-center justify-between gap-3">
-                                <div class="flex items-center gap-2" data-carousel-dots></div>
+                                <div class="product-carousel-dots" data-carousel-dots></div>
                                 <div class="rounded-md bg-zinc-200/70 px-2.5 py-1 text-xs font-semibold text-zinc-600 tabular-nums" data-carousel-count></div>
                             </div>
                         </div>
@@ -218,7 +296,7 @@
                         if (dotsWrap) {
                             images.forEach((_, index) => {
                                 const dot = buildIndicatorButton(
-                                    'h-2.5 w-2.5 rounded-full bg-zinc-300 transition',
+                                    'product-carousel-dot',
                                     () => show(index)
                                 );
                                 dot.setAttribute('aria-label', `Показать фото ${index + 1}`);
@@ -230,7 +308,7 @@
                         if (thumbsWrap) {
                             images.forEach((image, index) => {
                                 const thumb = buildIndicatorButton(
-                                    'h-14 w-14 shrink-0 overflow-hidden rounded-lg border-2 border-transparent bg-white transition',
+                                    'product-carousel-thumb',
                                     () => show(index)
                                 );
                                 thumb.innerHTML = `<img src="${image}" alt="" class="h-full w-full object-cover">`;
@@ -245,15 +323,11 @@
                             imageNode.alt = `${@json($product->name)} (${activeIndex + 1}/${images.length})`;
 
                             dots.forEach((dot, dotIndex) => {
-                                dot.className = dotIndex === activeIndex
-                                    ? 'h-2.5 w-2.5 rounded-full bg-zinc-900 transition'
-                                    : 'h-2.5 w-2.5 rounded-full bg-zinc-300 transition';
+                                dot.classList.toggle('is-active', dotIndex === activeIndex);
                             });
 
                             thumbs.forEach((thumb, thumbIndex) => {
-                                thumb.className = thumbIndex === activeIndex
-                                    ? 'h-14 w-14 shrink-0 overflow-hidden rounded-lg border-2 border-zinc-900 bg-white'
-                                    : 'h-14 w-14 shrink-0 overflow-hidden rounded-lg border-2 border-transparent bg-white';
+                                thumb.classList.toggle('is-active', thumbIndex === activeIndex);
                             });
 
                             if (countNode) {
