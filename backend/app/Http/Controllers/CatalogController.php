@@ -14,7 +14,7 @@ class CatalogController extends Controller
     public function index(Request $request): JsonResponse|View
     {
         $products = Product::query()
-            ->with('variants')
+            ->with(['variants', 'media'])
             ->where('is_active', true)
             ->when($request->string('search')->isNotEmpty(), function ($query) use ($request) {
                 $search = $request->string('search')->toString();

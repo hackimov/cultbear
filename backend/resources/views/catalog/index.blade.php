@@ -21,8 +21,15 @@
         <h2 class="text-2xl font-bold">Популярные тематики</h2>
         <div class="mt-6 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
             @forelse($themes as $theme)
-                <a href="/themes/{{ $theme->slug }}" class="rounded-xl border border-zinc-200 p-5 hover:border-black">
-                    <h3 class="font-semibold">{{ $theme->name }}</h3>
+                <a href="/themes/{{ $theme->slug }}" class="overflow-hidden rounded-xl border border-zinc-200 bg-white p-3 hover:border-black">
+                    <div class="overflow-hidden rounded-lg bg-zinc-100">
+                        @if($theme->banner_src)
+                            <img src="{{ $theme->banner_src }}" alt="{{ $theme->name }}" class="aspect-[16/10] w-full object-cover">
+                        @else
+                            <div class="aspect-[16/10] w-full bg-zinc-200"></div>
+                        @endif
+                    </div>
+                    <h3 class="mt-3 font-semibold">{{ $theme->name }}</h3>
                     <p class="mt-2 text-sm text-zinc-600">{{ $theme->description ?? 'Тематическая подборка товаров.' }}</p>
                 </a>
             @empty
@@ -35,8 +42,28 @@
         <h2 class="text-2xl font-bold">Хиты продаж и новинки</h2>
         <div class="mt-6 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
             @foreach($products as $product)
-                <a href="/products/{{ $product->slug }}" class="rounded-xl border border-zinc-200 p-4">
-                    <p class="text-xs text-zinc-500">{{ $product->article }}</p>
+                @php
+                    $productMedia = $product->media
+                        ->sortByDesc(fn ($media) => (bool) $media->is_primary)
+                        ->first();
+                    $productThumbPath = $productMedia?->webp_path ?: $productMedia?->preview_path ?: $productMedia?->path;
+                    $productThumbUrl = null;
+                    if ($productThumbPath) {
+                        $productThumbUrl = filter_var($productThumbPath, FILTER_VALIDATE_URL)
+                            ? $productThumbPath
+                            : \Illuminate\Support\Facades\Storage::disk($productMedia?->disk ?: 's3')->url($productThumbPath);
+                    }
+                @endphp
+
+                <a href="/products/{{ $product->slug }}" class="overflow-hidden rounded-xl border border-zinc-200 bg-white p-3 hover:border-black">
+                    <div class="overflow-hidden rounded-lg bg-zinc-100">
+                        @if($productThumbUrl)
+                            <img src="{{ $productThumbUrl }}" alt="{{ $product->name }}" class="aspect-square w-full object-cover">
+                        @else
+                            <div class="aspect-square w-full bg-zinc-200"></div>
+                        @endif
+                    </div>
+                    <p class="mt-3 text-xs text-zinc-500">{{ $product->article }}</p>
                     <h3 class="mt-1 font-semibold">{{ $product->name }}</h3>
                     <p class="mt-3 text-sm font-bold">{{ number_format($product->base_price, 0, '.', ' ') }} ₽</p>
                 </a>
