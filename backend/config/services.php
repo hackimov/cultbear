@@ -37,8 +37,8 @@ return [
 
     'dadata' => [
         'base_url' => env('DADATA_BASE_URL', 'https://suggestions.dadata.ru'),
-        'token' => env('DADATA_TOKEN'),
-        'secret' => env('DADATA_SECRET'),
+        'token' => env('DADATA_API_KEY', env('DADATA_TOKEN')),
+        'secret' => env('DADATA_SECRET_KEY', env('DADATA_SECRET')),
     ],
 
     'tochka' => [
