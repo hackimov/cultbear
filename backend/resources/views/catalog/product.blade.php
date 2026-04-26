@@ -1,7 +1,38 @@
 @extends('layouts.app', ['title' => $product->name.' — CultBear'])
 
 @section('content')
-    <section class="mx-auto max-w-6xl px-4 py-8 md:py-10">
+    <style>
+        .product-page-wrap {
+            max-width: 1120px;
+        }
+
+        .product-layout {
+            display: grid;
+            gap: 2rem;
+            align-items: start;
+        }
+
+        .product-gallery-wrap {
+            width: 100%;
+            max-width: 760px;
+            margin: 0 auto;
+        }
+
+        .product-gallery-image {
+            width: 100%;
+            aspect-ratio: 1 / 1;
+            object-fit: cover;
+            max-height: 640px;
+        }
+
+        @media (min-width: 1024px) {
+            .product-layout {
+                grid-template-columns: minmax(0, 1fr) 380px;
+            }
+        }
+    </style>
+
+    <section class="product-page-wrap mx-auto px-4 py-8 md:py-10">
         @php
             $imageUrls = $product->media
                 ->sortByDesc(fn ($media) => (bool) $media->is_primary)
@@ -23,15 +54,15 @@
                 ->all();
         @endphp
 
-        <div class="grid items-start gap-8 lg:grid-cols-[minmax(0,1fr)_380px]">
-            <div class="mx-auto w-full max-w-3xl">
+        <div class="product-layout">
+            <div class="product-gallery-wrap">
                 <div class="js-product-carousel rounded-2xl border border-zinc-200 bg-zinc-50 p-4 sm:p-6" data-images='@json($imageUrls)'>
                 @if(! empty($imageUrls))
                     <div class="relative overflow-hidden rounded-xl bg-white shadow-sm">
                         <img
                             src="{{ $imageUrls[0] }}"
                             alt="{{ $product->name }}"
-                            class="aspect-square max-h-[640px] w-full object-cover"
+                            class="product-gallery-image"
                             data-carousel-image
                         >
 
