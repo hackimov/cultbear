@@ -240,7 +240,7 @@
                             </div>
                         </div>
 
-                        <button type="submit" class="w-full rounded-xl bg-black px-6 py-3.5 text-sm font-bold text-white transition hover:bg-zinc-800">
+                        <button type="submit" class="w-full rounded-xl bg-black px-6 py-3 text-sm font-bold text-white transition hover:bg-zinc-800">
                             Добавить в корзину
                         </button>
                         <a href="/cart" class="block w-full rounded-xl border border-zinc-300 px-6 py-3 text-center text-sm font-semibold text-zinc-900">
