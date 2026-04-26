@@ -23,20 +23,14 @@
                 ->all();
         @endphp
 
-        <div class="grid gap-6 lg:grid-cols-[96px_minmax(0,1fr)_380px]">
-            <div class="hidden lg:block">
-                @if(count($imageUrls) > 1)
-                    <div class="js-carousel-thumbs flex flex-col gap-3" data-carousel-thumbs></div>
-                @endif
-            </div>
-
+        <div class="grid gap-8 lg:grid-cols-[minmax(0,1fr)_380px]">
             <div class="js-product-carousel rounded-2xl border border-zinc-200 bg-zinc-50 p-4 sm:p-6" data-images='@json($imageUrls)'>
                 @if(! empty($imageUrls))
                     <div class="relative overflow-hidden rounded-xl bg-white">
                         <img
                             src="{{ $imageUrls[0] }}"
                             alt="{{ $product->name }}"
-                            class="aspect-square w-full object-cover"
+                            class="aspect-square max-h-[680px] w-full object-cover"
                             data-carousel-image
                         >
 
@@ -58,14 +52,18 @@
                     </div>
 
                     @if(count($imageUrls) > 1)
-                        <div class="mt-4 flex items-center justify-center gap-2 lg:hidden" data-carousel-dots></div>
+                        <div class="mt-4 flex items-center justify-between gap-4">
+                            <div class="hidden sm:flex items-center gap-2 overflow-x-auto py-1" data-carousel-thumbs></div>
+                            <div class="flex items-center gap-2" data-carousel-dots></div>
+                            <div class="text-xs font-medium text-zinc-500 tabular-nums" data-carousel-count></div>
+                        </div>
                     @endif
                 @else
                     <div class="aspect-square rounded-xl bg-zinc-200"></div>
                 @endif
             </div>
 
-            <div class="space-y-4">
+            <div class="space-y-4 lg:sticky lg:top-6 lg:self-start">
                 <div>
                     <p class="text-xs text-zinc-500">Артикул: {{ $product->article ?: '—' }}</p>
                     <h1 class="mt-1 text-3xl font-black leading-tight">{{ $product->name }}</h1>
@@ -153,7 +151,8 @@
                     const prevButton = carousel.querySelector('[data-carousel-prev]');
                     const nextButton = carousel.querySelector('[data-carousel-next]');
                     const dotsWrap = carousel.querySelector('[data-carousel-dots]');
-                    const thumbsWrap = document.querySelector('[data-carousel-thumbs]');
+                    const thumbsWrap = carousel.querySelector('[data-carousel-thumbs]');
+                    const countNode = carousel.querySelector('[data-carousel-count]');
                     const stage = imageNode?.parentElement;
 
                     if (imageNode && prevButton && nextButton && stage) {
@@ -185,10 +184,10 @@
                         if (thumbsWrap) {
                             images.forEach((image, index) => {
                                 const thumb = buildIndicatorButton(
-                                    'overflow-hidden rounded-xl border-2 border-transparent bg-white',
+                                    'h-14 w-14 shrink-0 overflow-hidden rounded-lg border-2 border-transparent bg-white',
                                     () => show(index)
                                 );
-                                thumb.innerHTML = `<img src="${image}" alt="" class="h-20 w-20 object-cover">`;
+                                thumb.innerHTML = `<img src="${image}" alt="" class="h-full w-full object-cover">`;
                                 thumbsWrap.appendChild(thumb);
                                 thumbs.push(thumb);
                             });
@@ -206,9 +205,13 @@
 
                             thumbs.forEach((thumb, thumbIndex) => {
                                 thumb.className = thumbIndex === activeIndex
-                                    ? 'overflow-hidden rounded-xl border-2 border-zinc-900 bg-white'
-                                    : 'overflow-hidden rounded-xl border-2 border-transparent bg-white';
+                                    ? 'h-14 w-14 shrink-0 overflow-hidden rounded-lg border-2 border-zinc-900 bg-white'
+                                    : 'h-14 w-14 shrink-0 overflow-hidden rounded-lg border-2 border-transparent bg-white';
                             });
+
+                            if (countNode) {
+                                countNode.textContent = `${activeIndex + 1} / ${images.length}`;
+                            }
                         };
 
                         prevButton.addEventListener('click', () => show(activeIndex - 1));
