@@ -201,6 +201,8 @@
                         @csrf
                         @php($selectedVariantId = old('product_variant_id'))
                         @php($selectedVariant = $product->variants->firstWhere('id', (int) $selectedVariantId) ?: $product->variants->first())
+                        @php($availableSizes = $product->variants->pluck('size')->filter()->unique()->values())
+                        @php($availableColors = $product->variants->pluck('color')->filter()->unique()->values())
 
                         <div class="rounded-xl bg-zinc-900 p-4 text-white">
                             <div class="text-xs uppercase tracking-wide text-zinc-300">Цена</div>
@@ -210,18 +212,30 @@
                         </div>
 
                         <div>
-                            <label for="product_variant_id" class="mb-1.5 block text-sm font-semibold">Вариант</label>
+                            <label for="product_variant_id" class="mb-1.5 block text-sm font-semibold" data-model-label>{{ $selectedVariant->model }}</label>
                             <select id="product_variant_id" name="product_variant_id" class="w-full rounded-xl border border-zinc-300 px-3 py-3 text-sm" required>
                                 @foreach($product->variants as $variant)
                                     <option
                                         value="{{ $variant->id }}"
                                         data-price="{{ $variant->price }}"
+                                        data-model="{{ $variant->model }}"
                                         @selected((int) old('product_variant_id', $selectedVariant->id) === $variant->id)
                                     >
-                                        {{ $variant->model }} / {{ $variant->size }} / {{ $variant->color }}
+                                        {{ $variant->size }} / {{ $variant->color }}
                                     </option>
                                 @endforeach
                             </select>
+                        </div>
+
+                        <div class="rounded-xl border border-zinc-200 bg-zinc-50 p-3">
+                            <p class="text-xs font-semibold uppercase tracking-wide text-zinc-500">Доступные размеры</p>
+                            <p class="mt-1 text-sm font-medium text-zinc-800">
+                                {{ $availableSizes->isNotEmpty() ? $availableSizes->join(', ') : '—' }}
+                            </p>
+                            <p class="mt-3 text-xs font-semibold uppercase tracking-wide text-zinc-500">Доступные цвета</p>
+                            <p class="mt-1 text-sm font-medium text-zinc-800">
+                                {{ $availableColors->isNotEmpty() ? $availableColors->join(', ') : '—' }}
+                            </p>
                         </div>
 
                         <div class="flex items-center justify-between gap-3">
@@ -362,6 +376,7 @@
 
             const variantSelect = buyBox.querySelector('#product_variant_id');
             const priceNode = buyBox.querySelector('[data-variant-price]');
+            const modelLabelNode = buyBox.querySelector('[data-model-label]');
             const qtyInput = buyBox.querySelector('[data-qty-input]');
             const minusButton = buyBox.querySelector('[data-qty-minus]');
             const plusButton = buyBox.querySelector('[data-qty-plus]');
@@ -372,6 +387,9 @@
                 const selected = variantSelect.options[variantSelect.selectedIndex];
                 const price = selected?.dataset.price ?? 0;
                 priceNode.textContent = formatPrice(price);
+                if (modelLabelNode && selected?.dataset.model) {
+                    modelLabelNode.textContent = selected.dataset.model;
+                }
             };
 
             variantSelect?.addEventListener('change', updatePrice);
