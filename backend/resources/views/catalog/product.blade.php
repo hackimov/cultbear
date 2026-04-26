@@ -97,6 +97,131 @@
             background: #18181b;
         }
 
+        .product-buy-box {
+            padding: 1.375rem;
+            border: 1px solid #e4e4e7;
+            border-radius: 1rem;
+            background: #fff;
+            box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04);
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        .product-price-card {
+            padding: 1rem;
+            border-radius: 0.875rem;
+            background: linear-gradient(180deg, #111827 0%, #09090b 100%);
+            color: #fff;
+        }
+
+        .product-model-label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-size: 0.95rem;
+            font-weight: 700;
+            color: #18181b;
+        }
+
+        .product-variant-select {
+            width: 100%;
+            border: 1px solid #d4d4d8;
+            border-radius: 0.875rem;
+            padding: 0.75rem 0.875rem;
+            font-size: 0.95rem;
+            line-height: 1.2;
+            background: #fff;
+        }
+
+        .product-attrs-box {
+            border: 1px solid #e4e4e7;
+            border-radius: 0.875rem;
+            background: #fafafa;
+            padding: 0.875rem;
+        }
+
+        .product-attrs-title {
+            margin: 0;
+            font-size: 0.75rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.04em;
+            color: #71717a;
+        }
+
+        .product-attrs-value {
+            margin: 0.375rem 0 0;
+            font-size: 0.9375rem;
+            font-weight: 600;
+            color: #18181b;
+            line-height: 1.35;
+        }
+
+        .product-attrs-title + .product-attrs-title {
+            margin-top: 0.875rem;
+        }
+
+        .product-qty-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 0.75rem;
+            margin-top: 0.125rem;
+        }
+
+        .product-qty-control {
+            display: inline-flex;
+            align-items: center;
+            border: 1px solid #d4d4d8;
+            border-radius: 0.875rem;
+            overflow: hidden;
+        }
+
+        .product-qty-btn {
+            padding: 0.5rem 0.875rem;
+            font-size: 1.125rem;
+            line-height: 1;
+        }
+
+        .product-qty-input {
+            width: 3.5rem;
+            border-left: 1px solid #d4d4d8;
+            border-right: 1px solid #d4d4d8;
+            padding: 0.5rem 0.25rem;
+            text-align: center;
+            font-size: 0.95rem;
+            line-height: 1.2;
+            outline: none;
+        }
+
+        .product-primary-btn,
+        .product-secondary-btn {
+            width: 100%;
+            border-radius: 0.875rem;
+            padding: 0.75rem 1.5rem;
+            text-align: center;
+            font-size: 0.95rem;
+            font-weight: 700;
+            line-height: 1.2;
+            display: block;
+        }
+
+        .product-primary-btn {
+            background: #000;
+            color: #fff;
+            transition: background-color 0.2s ease;
+        }
+
+        .product-primary-btn:hover {
+            background: #27272a;
+        }
+
+        .product-secondary-btn {
+            border: 1px solid #d4d4d8;
+            color: #18181b;
+            background: #fff;
+        }
+
         @media (min-width: 640px) {
             .product-carousel-thumbs {
                 display: flex;
@@ -197,14 +322,14 @@
                 @endif
 
                 @if($product->variants->isNotEmpty())
-                    <form method="POST" action="/cart/items" class="rounded-2xl border border-zinc-200 bg-white p-5 shadow-sm space-y-4 js-buy-box">
+                    <form method="POST" action="/cart/items" class="product-buy-box js-buy-box">
                         @csrf
                         @php($selectedVariantId = old('product_variant_id'))
                         @php($selectedVariant = $product->variants->firstWhere('id', (int) $selectedVariantId) ?: $product->variants->first())
                         @php($availableSizes = $product->variants->pluck('size')->filter()->unique()->values())
                         @php($availableColors = $product->variants->pluck('color')->filter()->unique()->values())
 
-                        <div class="rounded-xl bg-zinc-900 p-4 text-white">
+                        <div class="product-price-card">
                             <div class="text-xs uppercase tracking-wide text-zinc-300">Цена</div>
                             <div class="mt-1 text-3xl font-black" data-variant-price>
                                 {{ number_format($selectedVariant->price, 0, '.', ' ') }} ₽
@@ -212,8 +337,8 @@
                         </div>
 
                         <div>
-                            <label for="product_variant_id" class="mb-1.5 block text-sm font-semibold" data-model-label>{{ $selectedVariant->model }}</label>
-                            <select id="product_variant_id" name="product_variant_id" class="w-full rounded-xl border border-zinc-300 px-3 py-3 text-sm" required>
+                            <label for="product_variant_id" class="product-model-label" data-model-label>{{ $selectedVariant->model }}</label>
+                            <select id="product_variant_id" name="product_variant_id" class="product-variant-select" required>
                                 @foreach($product->variants as $variant)
                                     <option
                                         value="{{ $variant->id }}"
@@ -227,37 +352,37 @@
                             </select>
                         </div>
 
-                        <div class="rounded-xl border border-zinc-200 bg-zinc-50 p-3">
-                            <p class="text-xs font-semibold uppercase tracking-wide text-zinc-500">Доступные размеры</p>
-                            <p class="mt-1 text-sm font-medium text-zinc-800">
+                        <div class="product-attrs-box">
+                            <p class="product-attrs-title">Доступные размеры</p>
+                            <p class="product-attrs-value">
                                 {{ $availableSizes->isNotEmpty() ? $availableSizes->join(', ') : '—' }}
                             </p>
-                            <p class="mt-3 text-xs font-semibold uppercase tracking-wide text-zinc-500">Доступные цвета</p>
-                            <p class="mt-1 text-sm font-medium text-zinc-800">
+                            <p class="product-attrs-title">Доступные цвета</p>
+                            <p class="product-attrs-value">
                                 {{ $availableColors->isNotEmpty() ? $availableColors->join(', ') : '—' }}
                             </p>
                         </div>
 
-                        <div class="flex items-center justify-between gap-3">
+                        <div class="product-qty-row">
                             <span class="text-sm font-semibold">Количество</span>
-                            <div class="inline-flex items-center rounded-xl border border-zinc-300">
-                                <button type="button" class="px-3 py-2 text-lg leading-none" data-qty-minus aria-label="Уменьшить">−</button>
+                            <div class="product-qty-control">
+                                <button type="button" class="product-qty-btn" data-qty-minus aria-label="Уменьшить">−</button>
                                 <input
                                     type="number"
                                     name="quantity"
                                     value="{{ old('quantity', 1) }}"
                                     min="1"
-                                    class="w-14 border-x border-zinc-300 py-2 text-center text-sm outline-none"
+                                    class="product-qty-input"
                                     data-qty-input
                                 >
-                                <button type="button" class="px-3 py-2 text-lg leading-none" data-qty-plus aria-label="Увеличить">+</button>
+                                <button type="button" class="product-qty-btn" data-qty-plus aria-label="Увеличить">+</button>
                             </div>
                         </div>
 
-                        <button type="submit" class="w-full rounded-xl bg-black px-6 py-3 text-sm font-bold text-white transition hover:bg-zinc-800">
+                        <button type="submit" class="product-primary-btn">
                             Добавить в корзину
                         </button>
-                        <a href="/cart" class="block w-full rounded-xl border border-zinc-300 px-6 py-3 text-center text-sm font-semibold text-zinc-900">
+                        <a href="/cart" class="product-secondary-btn">
                             Перейти в корзину
                         </a>
                     </form>
