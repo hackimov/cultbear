@@ -24,7 +24,15 @@
                 <a href="/delivery">Доставка</a>
                 <a href="/contacts">Контакты</a>
                 <a href="/cart">Корзина</a>
-                <a href="/account/orders">Профиль</a>
+                @auth
+                    <a href="/account/orders">Профиль</a>
+                    <form method="POST" action="{{ route('logout') }}" class="inline">
+                        @csrf
+                        <button type="submit" class="text-sm">Выйти</button>
+                    </form>
+                @else
+                    <a href="{{ route('login') }}">Войти</a>
+                @endauth
             </nav>
             <button class="md:hidden" @click="mobileMenu = !mobileMenu" aria-label="Открыть меню">
                 <span class="block h-0.5 w-6 bg-black mb-1 transition"></span>
@@ -39,7 +47,15 @@
                 <a href="/delivery">Доставка</a>
                 <a href="/contacts">Контакты</a>
                 <a href="/cart">Корзина</a>
-                <a href="/account/orders">Профиль</a>
+                @auth
+                    <a href="/account/orders">Профиль</a>
+                    <form method="POST" action="{{ route('logout') }}" class="inline">
+                        @csrf
+                        <button type="submit" class="text-left">Выйти</button>
+                    </form>
+                @else
+                    <a href="{{ route('login') }}">Войти</a>
+                @endauth
             </div>
         </div>
     </header>
