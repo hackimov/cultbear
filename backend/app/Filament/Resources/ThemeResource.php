@@ -14,21 +14,28 @@ class ThemeResource extends Resource
 {
     protected static ?string $model = Theme::class;
 
-    protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
+    protected static ?string $navigationIcon = 'heroicon-o-swatch';
+
+    protected static ?string $modelLabel = 'Тематика';
+
+    protected static ?string $pluralModelLabel = 'Тематики';
+
+    protected static ?string $navigationLabel = 'Тематики';
 
     public static function form(Form $form): Form
     {
         return $form
             ->schema([
-                Forms\Components\TextInput::make('name')->required()->maxLength(255),
-                Forms\Components\TextInput::make('slug')->required()->unique(ignoreRecord: true),
-                Forms\Components\Textarea::make('description')->rows(3),
-                Forms\Components\TextInput::make('banner_url')->url(),
+                Forms\Components\TextInput::make('name')->label('Название')->required()->maxLength(255),
+                Forms\Components\TextInput::make('slug')->label('Slug (URL)')->required()->unique(ignoreRecord: true),
+                Forms\Components\Textarea::make('description')->label('Описание')->rows(3),
+                Forms\Components\TextInput::make('banner_url')->label('URL баннера')->url(),
                 Forms\Components\Select::make('layout_columns')
+                    ->label('Колонок в сетке')
                     ->options([2 => '2 колонки', 3 => '3 колонки', 4 => '4 колонки'])
                     ->required(),
-                Forms\Components\TextInput::make('sort_order')->numeric()->default(0)->required(),
-                Forms\Components\Toggle::make('is_active')->default(true),
+                Forms\Components\TextInput::make('sort_order')->label('Порядок сортировки')->numeric()->default(0)->required(),
+                Forms\Components\Toggle::make('is_active')->label('Активна')->default(true),
             ]);
     }
 
@@ -36,11 +43,11 @@ class ThemeResource extends Resource
     {
         return $table
             ->columns([
-                Tables\Columns\TextColumn::make('name')->searchable()->sortable(),
-                Tables\Columns\TextColumn::make('slug')->searchable(),
+                Tables\Columns\TextColumn::make('name')->label('Название')->searchable()->sortable(),
+                Tables\Columns\TextColumn::make('slug')->label('Slug')->searchable(),
                 Tables\Columns\TextColumn::make('layout_columns')->label('Сетка'),
-                Tables\Columns\IconColumn::make('is_active')->boolean(),
-                Tables\Columns\TextColumn::make('sort_order')->sortable(),
+                Tables\Columns\IconColumn::make('is_active')->label('Активна')->boolean(),
+                Tables\Columns\TextColumn::make('sort_order')->label('Порядок')->sortable(),
             ])
             ->filters([
             ])

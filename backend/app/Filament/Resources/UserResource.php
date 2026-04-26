@@ -16,28 +16,38 @@ class UserResource extends Resource
 {
     protected static ?string $model = User::class;
 
-    protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
+    protected static ?string $navigationIcon = 'heroicon-o-users';
+
+    protected static ?string $modelLabel = 'Пользователь';
+
+    protected static ?string $pluralModelLabel = 'Пользователи';
+
+    protected static ?string $navigationLabel = 'Пользователи';
 
     public static function form(Form $form): Form
     {
         return $form
             ->schema([
                 Forms\Components\TextInput::make('name')
+                    ->label('Имя')
                     ->required()
                     ->maxLength(255),
                 Forms\Components\TextInput::make('email')
+                    ->label('Email')
                     ->email()
                     ->required()
                     ->unique(ignoreRecord: true),
                 Forms\Components\TextInput::make('phone')
+                    ->label('Телефон')
                     ->maxLength(20),
                 Forms\Components\TextInput::make('password')
+                    ->label('Пароль')
                     ->password()
                     ->dehydrated(fn (?string $state): bool => filled($state))
                     ->dehydrateStateUsing(fn (string $state): string => Hash::make($state))
-                    ->required(fn (string $operation): bool => $operation === 'create')
-                    ->label('Password'),
+                    ->required(fn (string $operation): bool => $operation === 'create'),
                 Forms\Components\Select::make('roles')
+                    ->label('Роли')
                     ->relationship('roles', 'name')
                     ->options(Role::query()->pluck('name', 'name'))
                     ->preload()
@@ -51,13 +61,14 @@ class UserResource extends Resource
     {
         return $table
             ->columns([
-                Tables\Columns\TextColumn::make('name')->searchable()->sortable(),
-                Tables\Columns\TextColumn::make('email')->searchable()->sortable(),
-                Tables\Columns\TextColumn::make('phone'),
+                Tables\Columns\TextColumn::make('name')->label('Имя')->searchable()->sortable(),
+                Tables\Columns\TextColumn::make('email')->label('Email')->searchable()->sortable(),
+                Tables\Columns\TextColumn::make('phone')->label('Телефон'),
                 Tables\Columns\TextColumn::make('roles.name')
+                    ->label('Роли')
                     ->badge()
                     ->separator(','),
-                Tables\Columns\TextColumn::make('created_at')->dateTime()->sortable(),
+                Tables\Columns\TextColumn::make('created_at')->label('Создан')->dateTime()->sortable(),
             ])
             ->filters([
             ])

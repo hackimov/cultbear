@@ -15,23 +15,30 @@ class ProductVariantResource extends Resource
 {
     protected static ?string $model = ProductVariant::class;
 
-    protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
+    protected static ?string $navigationIcon = 'heroicon-o-squares-2x2';
+
+    protected static ?string $modelLabel = 'Вариант товара';
+
+    protected static ?string $pluralModelLabel = 'Варианты товаров';
+
+    protected static ?string $navigationLabel = 'Варианты';
 
     public static function form(Form $form): Form
     {
         return $form
             ->schema([
                 Forms\Components\Select::make('product_id')
+                    ->label('Товар')
                     ->options(Product::query()->pluck('name', 'id'))
                     ->required()
                     ->searchable(),
-                Forms\Components\TextInput::make('model')->required(),
-                Forms\Components\TextInput::make('size')->required(),
-                Forms\Components\TextInput::make('color')->required(),
-                Forms\Components\TextInput::make('sku_variant')->required()->unique(ignoreRecord: true),
-                Forms\Components\TextInput::make('price')->numeric()->required(),
-                Forms\Components\TextInput::make('stock_quantity')->numeric()->required(),
-                Forms\Components\Toggle::make('is_active')->default(true),
+                Forms\Components\TextInput::make('model')->label('Модель')->required(),
+                Forms\Components\TextInput::make('size')->label('Размер')->required(),
+                Forms\Components\TextInput::make('color')->label('Цвет')->required(),
+                Forms\Components\TextInput::make('sku_variant')->label('SKU варианта')->required()->unique(ignoreRecord: true),
+                Forms\Components\TextInput::make('price')->label('Цена, ₽')->numeric()->required(),
+                Forms\Components\TextInput::make('stock_quantity')->label('Остаток на складе')->numeric()->required(),
+                Forms\Components\Toggle::make('is_active')->label('Активен')->default(true),
             ]);
     }
 
@@ -40,12 +47,12 @@ class ProductVariantResource extends Resource
         return $table
             ->columns([
                 Tables\Columns\TextColumn::make('product.name')->label('Товар')->searchable(),
-                Tables\Columns\TextColumn::make('sku_variant')->searchable(),
-                Tables\Columns\TextColumn::make('model'),
-                Tables\Columns\TextColumn::make('size'),
-                Tables\Columns\TextColumn::make('color'),
-                Tables\Columns\TextColumn::make('price')->money('RUB'),
-                Tables\Columns\TextColumn::make('stock_quantity')->sortable(),
+                Tables\Columns\TextColumn::make('sku_variant')->label('SKU')->searchable(),
+                Tables\Columns\TextColumn::make('model')->label('Модель'),
+                Tables\Columns\TextColumn::make('size')->label('Размер'),
+                Tables\Columns\TextColumn::make('color')->label('Цвет'),
+                Tables\Columns\TextColumn::make('price')->label('Цена')->money('RUB'),
+                Tables\Columns\TextColumn::make('stock_quantity')->label('Остаток')->sortable(),
             ])
             ->filters([
             ])

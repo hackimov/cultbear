@@ -17,6 +17,12 @@ class ProductResource extends Resource
 
     protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
 
+    protected static ?string $modelLabel = 'Товар';
+
+    protected static ?string $pluralModelLabel = 'Товары';
+
+    protected static ?string $navigationLabel = 'Товары';
+
     public static function form(Form $form): Form
     {
         return $form
@@ -26,15 +32,16 @@ class ProductResource extends Resource
                     ->options(Theme::query()->orderBy('sort_order')->pluck('name', 'id'))
                     ->required()
                     ->searchable(),
-                Forms\Components\TextInput::make('name')->required(),
-                Forms\Components\TextInput::make('slug')->required()->unique(ignoreRecord: true),
-                Forms\Components\TextInput::make('article')->required()->unique(ignoreRecord: true),
-                Forms\Components\Textarea::make('description'),
-                Forms\Components\TextInput::make('base_price')->numeric()->required(),
+                Forms\Components\TextInput::make('name')->label('Название')->required(),
+                Forms\Components\TextInput::make('slug')->label('Slug (URL)')->required()->unique(ignoreRecord: true),
+                Forms\Components\TextInput::make('article')->label('Артикул')->required()->unique(ignoreRecord: true),
+                Forms\Components\Textarea::make('description')->label('Описание'),
+                Forms\Components\TextInput::make('base_price')->label('Базовая цена, ₽')->numeric()->required(),
                 Forms\Components\Toggle::make('is_pinned')->label('Закрепить в топе')->default(false),
-                Forms\Components\TextInput::make('sort_order')->numeric()->default(0)->required(),
-                Forms\Components\Toggle::make('is_active')->default(true),
+                Forms\Components\TextInput::make('sort_order')->label('Порядок сортировки')->numeric()->default(0)->required(),
+                Forms\Components\Toggle::make('is_active')->label('Активен')->default(true),
                 Forms\Components\Repeater::make('media')
+                    ->label('Медиа')
                     ->relationship('media')
                     ->schema([
                         Forms\Components\Select::make('type')
@@ -43,14 +50,15 @@ class ProductResource extends Resource
                             ->required()
                             ->reactive(),
                         Forms\Components\FileUpload::make('path')
+                            ->label('Файл')
                             ->disk('s3')
                             ->directory('products/media')
                             ->visibility('public')
                             ->acceptedFileTypes(['image/jpeg', 'image/png', 'image/webp', 'video/mp4', 'video/webm'])
                             ->maxSize(10240)
                             ->required(),
-                        Forms\Components\Toggle::make('is_primary')->default(false),
-                        Forms\Components\TextInput::make('sort_order')->numeric()->default(0),
+                        Forms\Components\Toggle::make('is_primary')->label('Основное')->default(false),
+                        Forms\Components\TextInput::make('sort_order')->label('Порядок')->numeric()->default(0),
                     ])
                     ->columnSpanFull()
                     ->defaultItems(0),
@@ -61,12 +69,12 @@ class ProductResource extends Resource
     {
         return $table
             ->columns([
-                Tables\Columns\TextColumn::make('name')->searchable()->sortable(),
-                Tables\Columns\TextColumn::make('article')->searchable(),
+                Tables\Columns\TextColumn::make('name')->label('Название')->searchable()->sortable(),
+                Tables\Columns\TextColumn::make('article')->label('Артикул')->searchable(),
                 Tables\Columns\TextColumn::make('theme.name')->label('Тематика'),
-                Tables\Columns\TextColumn::make('base_price')->money('RUB'),
-                Tables\Columns\IconColumn::make('is_pinned')->boolean(),
-                Tables\Columns\TextColumn::make('sort_order')->sortable(),
+                Tables\Columns\TextColumn::make('base_price')->label('Цена')->money('RUB'),
+                Tables\Columns\IconColumn::make('is_pinned')->label('В топе')->boolean(),
+                Tables\Columns\TextColumn::make('sort_order')->label('Порядок')->sortable(),
             ])
             ->filters([
             ])
