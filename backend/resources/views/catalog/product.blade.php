@@ -390,7 +390,7 @@
                             Добавить в корзину
                         </button>
                         <a href="/cart" class="product-secondary-btn">
-                            Перейти в корзину
+                            Оформить заказ
                         </a>
                     </form>
                 @else

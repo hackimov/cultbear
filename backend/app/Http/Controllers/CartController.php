@@ -89,7 +89,7 @@ class CartController extends Controller
             return response()->json($item);
         }
 
-        return back()->with('status', 'Количество товара обновлено.');
+        return back();
     }
 
     public function destroyItem(Request $request, int $id): JsonResponse|RedirectResponse
@@ -101,7 +101,7 @@ class CartController extends Controller
             return response()->json(status: 204);
         }
 
-        return back()->with('status', 'Товар удален из корзины.');
+        return back();
     }
 
     private function resolveCart(Request $request): Cart
