@@ -1,6 +1,62 @@
 @extends('layouts.app', ['title' => 'CultBear — Главная'])
 
 @section('content')
+    <style>
+        .home-cards-grid {
+            margin-top: 1.5rem;
+        }
+
+        .home-card {
+            display: block;
+            overflow: hidden;
+            border: 1px solid #e4e4e7;
+            border-radius: 0.75rem;
+            background: #fff;
+            padding: 0.75rem;
+        }
+
+        .home-card:hover {
+            border-color: #18181b;
+        }
+
+        .home-card-media {
+            overflow: hidden;
+            border-radius: 0.625rem;
+            background: #f4f4f5;
+            margin-bottom: 0.75rem;
+        }
+
+        .home-card-title {
+            margin: 0;
+            font-size: 1rem;
+            line-height: 1.3;
+            font-weight: 600;
+            color: #18181b;
+        }
+
+        .home-card-description {
+            margin-top: 0.5rem;
+            font-size: 0.875rem;
+            line-height: 1.45;
+            color: #52525b;
+        }
+
+        .home-card-article {
+            margin: 0;
+            font-size: 0.75rem;
+            line-height: 1.2;
+            color: #71717a;
+        }
+
+        .home-card-price {
+            margin-top: 0.625rem;
+            font-size: 0.9375rem;
+            line-height: 1.25;
+            font-weight: 700;
+            color: #18181b;
+        }
+    </style>
+
     <section class="hero-observe relative overflow-hidden bg-zinc-100">
         <div class="mx-auto grid max-w-7xl gap-8 px-4 py-16 md:grid-cols-2 md:py-24">
             <div>
@@ -19,18 +75,18 @@
 
     <section class="mx-auto max-w-7xl px-4 py-12">
         <h2 class="text-2xl font-bold">Популярные тематики</h2>
-        <div class="mt-6 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+        <div class="home-cards-grid grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
             @forelse($themes as $theme)
-                <a href="/themes/{{ $theme->slug }}" class="overflow-hidden rounded-xl border border-zinc-200 bg-white p-3 hover:border-black">
-                    <div class="overflow-hidden rounded-lg bg-zinc-100">
+                <a href="/themes/{{ $theme->slug }}" class="home-card">
+                    <div class="home-card-media">
                         @if($theme->banner_src)
                             <img src="{{ $theme->banner_src }}" alt="{{ $theme->name }}" class="aspect-[16/10] w-full object-cover">
                         @else
                             <div class="aspect-[16/10] w-full bg-zinc-200"></div>
                         @endif
                     </div>
-                    <h3 class="mt-3 font-semibold">{{ $theme->name }}</h3>
-                    <p class="mt-2 text-sm text-zinc-600">{{ $theme->description ?? 'Тематическая подборка товаров.' }}</p>
+                    <h3 class="home-card-title">{{ $theme->name }}</h3>
+                    <p class="home-card-description">{{ $theme->description ?? 'Тематическая подборка товаров.' }}</p>
                 </a>
             @empty
                 <p class="text-zinc-600">Тематики пока не добавлены.</p>
@@ -40,7 +96,7 @@
 
     <section class="mx-auto max-w-7xl px-4 pb-14">
         <h2 class="text-2xl font-bold">Хиты продаж и новинки</h2>
-        <div class="mt-6 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+        <div class="home-cards-grid grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
             @foreach($products as $product)
                 @php
                     $productMedia = $product->media
@@ -55,17 +111,17 @@
                     }
                 @endphp
 
-                <a href="/products/{{ $product->slug }}" class="overflow-hidden rounded-xl border border-zinc-200 bg-white p-3 hover:border-black">
-                    <div class="overflow-hidden rounded-lg bg-zinc-100">
+                <a href="/products/{{ $product->slug }}" class="home-card">
+                    <div class="home-card-media">
                         @if($productThumbUrl)
                             <img src="{{ $productThumbUrl }}" alt="{{ $product->name }}" class="aspect-square w-full object-cover">
                         @else
                             <div class="aspect-square w-full bg-zinc-200"></div>
                         @endif
                     </div>
-                    <p class="mt-3 text-xs text-zinc-500">{{ $product->article }}</p>
-                    <h3 class="mt-1 font-semibold">{{ $product->name }}</h3>
-                    <p class="mt-3 text-sm font-bold">{{ number_format($product->base_price, 0, '.', ' ') }} ₽</p>
+                    <p class="home-card-article">{{ $product->article }}</p>
+                    <h3 class="home-card-title mt-1">{{ $product->name }}</h3>
+                    <p class="home-card-price">{{ number_format($product->base_price, 0, '.', ' ') }} ₽</p>
                 </a>
             @endforeach
         </div>
