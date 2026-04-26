@@ -1,0 +1,32 @@
+@extends('layouts.app', ['title' => 'Корзина — CultBear'])
+
+@section('content')
+<section class="mx-auto max-w-5xl px-4 py-12">
+    <h1 class="text-3xl font-black">Корзина</h1>
+
+    @if($items->isEmpty())
+        <p class="mt-6 text-zinc-600">В корзине пока ничего нет.</p>
+        <a href="/" class="mt-4 inline-block rounded bg-black px-5 py-2.5 text-sm font-semibold text-white">Перейти в каталог</a>
+    @else
+        <div class="mt-8 space-y-4">
+            @foreach($items as $item)
+                <article class="rounded-xl border border-zinc-200 p-4">
+                    <p class="text-xs text-zinc-500">{{ $item->variant->product->article ?? '—' }}</p>
+                    <h3 class="mt-1 font-semibold">{{ $item->variant->product->name ?? 'Товар' }}</h3>
+                    <p class="mt-1 text-sm text-zinc-600">
+                        Вариант: {{ $item->variant->model ?? '-' }} / {{ $item->variant->size ?? '-' }} / {{ $item->variant->color ?? '-' }}
+                    </p>
+                    <p class="mt-2 text-sm">Количество: <strong>{{ $item->quantity }}</strong></p>
+                    <p class="text-sm">Цена за штуку: <strong>{{ number_format((int)$item->unit_price, 0, '.', ' ') }} ₽</strong></p>
+                    <p class="mt-1 text-sm font-semibold">Сумма: {{ number_format((int)$item->quantity * (int)$item->unit_price, 0, '.', ' ') }} ₽</p>
+                </article>
+            @endforeach
+        </div>
+
+        <div class="mt-8 rounded-xl border border-zinc-200 p-4">
+            <p class="text-lg font-semibold">Итого: {{ number_format((int)$total, 0, '.', ' ') }} ₽</p>
+            <p class="mt-2 text-sm text-zinc-600">Для оформления заказа перейдите к форме на странице товара (кнопка добавления в корзину и checkout API уже подключены в бэкенде).</p>
+        </div>
+    @endif
+</section>
+@endsection

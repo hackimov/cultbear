@@ -7,15 +7,27 @@ use App\Models\CartItem;
 use App\Models\ProductVariant;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\View\View;
 
 class CartController extends Controller
 {
-    public function show(Request $request): JsonResponse
+    public function show(Request $request): JsonResponse | View
     {
         $cart = $this->resolveCart($request);
         $cart->load('items.variant.product');
 
-        return response()->json($cart);
+        if ($request->expectsJson()) {
+            return response()->json($cart);
+        }
+
+        $items = $cart->items;
+        $total = $items->sum(fn (CartItem $item): int => (int) $item->quantity * (int) $item->unit_price);
+
+        return view('cart.show', [
+            'cart' => $cart,
+            'items' => $items,
+            'total' => $total,
+        ]);
     }
 
     public function storeItem(Request $request): JsonResponse
