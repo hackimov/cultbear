@@ -43,7 +43,6 @@ class ThemeResource extends Resource
                 Forms\Components\Textarea::make('description')->label('Описание')->rows(3),
                 Forms\Components\FileUpload::make('banner_url')
                     ->label('Баннер')
-                    ->helperText('Загрузка в S3 (как у фото товаров). JPEG, PNG или WebP.')
                     ->image()
                     ->disk('s3')
                     ->directory('themes/banners')
@@ -53,6 +52,7 @@ class ThemeResource extends Resource
                     ->nullable(),
                 Forms\Components\Select::make('layout_columns')
                     ->label('Колонок в сетке')
+                    ->placeholder('Выберите сетку')
                     ->options([2 => '2 колонки', 3 => '3 колонки', 4 => '4 колонки'])
                     ->required(),
                 Forms\Components\TextInput::make('sort_order')->label('Порядок сортировки')->numeric()->default(0)->required(),

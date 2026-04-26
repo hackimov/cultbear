@@ -1,7 +1,8 @@
 @extends('layouts.app', ['title' => 'Вход — CultBear'])
 
 @section('content')
-<div class="mx-auto max-w-md px-4 py-12">
+<section class="mx-auto w-full max-w-7xl px-4 py-12 md:py-16">
+<div class="w-full rounded-2xl border border-zinc-200 bg-white p-6 md:p-8" style="max-width: 28rem;">
     <h1 class="text-2xl font-semibold text-zinc-900">Вход</h1>
     <p class="mt-2 text-sm text-zinc-600">Нет аккаунта? <a href="{{ route('register') }}" class="underline">Регистрация</a></p>
 
@@ -33,4 +34,5 @@
         <a href="{{ route('password.request') }}" class="underline">Забыли пароль?</a>
     </p>
 </div>
+</section>
 @endsection

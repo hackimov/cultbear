@@ -1,7 +1,8 @@
 @extends('layouts.app', ['title' => 'Восстановление пароля — CultBear'])
 
 @section('content')
-<div class="mx-auto max-w-md px-4 py-12">
+<section class="mx-auto w-full max-w-7xl px-4 py-12 md:py-16">
+<div class="w-full rounded-2xl border border-zinc-200 bg-white p-6 md:p-8" style="max-width: 28rem;">
     <h1 class="text-2xl font-semibold text-zinc-900">Сброс пароля</h1>
     <p class="mt-2 text-sm text-zinc-600">Укажите email — отправим ссылку для нового пароля.</p>
 
@@ -23,4 +24,5 @@
         <a href="{{ route('login') }}" class="text-zinc-600 underline">Назад ко входу</a>
     </p>
 </div>
+</section>
 @endsection
