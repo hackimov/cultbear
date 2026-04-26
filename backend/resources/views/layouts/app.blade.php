@@ -12,7 +12,7 @@
     @vite(['resources/css/app.css', 'resources/js/app.js'])
     <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
 </head>
-<body class="bg-white text-zinc-900" x-data="{mobileMenu:false}">
+<body class="flex min-h-screen flex-col bg-white text-zinc-900" x-data="{mobileMenu:false}">
     <header class="border-b border-zinc-200">
         <div class="mx-auto flex max-w-7xl items-center justify-between px-4 py-4">
             <a href="/" class="inline-flex h-10 w-[172px] shrink-0 items-center" aria-label="CultBear">
@@ -44,11 +44,11 @@
         </div>
     </header>
 
-    <main>
+    <main class="flex-1">
         @yield('content')
     </main>
 
-    <footer class="mt-16 border-t border-zinc-200 bg-zinc-50">
+    <footer class="border-t border-zinc-200 bg-zinc-50">
         <div class="mx-auto max-w-7xl px-4 py-8 text-sm text-zinc-700">
             <p class="font-semibold">{{ $legal['company_name'] ?? 'CultBear' }}</p>
             <p>ИНН: {{ $legal['inn'] ?? '-' }} | ОГРН: {{ $legal['ogrn'] ?? '-' }}</p>
