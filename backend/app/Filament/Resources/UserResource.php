@@ -73,8 +73,8 @@ class UserResource extends Resource
                     ->options(
                         Role::query()
                             ->orderBy('name')
-                            ->pluck('name')
-                            ->mapWithKeys(fn (string $name): array => [$name => static::roleTitle($name)])
+                            ->get(['id', 'name'])
+                            ->mapWithKeys(fn (Role $role): array => [$role->id => static::roleTitle($role->name)])
                     )
                     ->preload()
                     ->multiple()
