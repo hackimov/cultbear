@@ -425,6 +425,52 @@
             }
             hideSuggestions();
         });
+
+        const checkoutForm = document.querySelector('form[action="/checkout"]');
+        if (!checkoutForm) {
+            return;
+        }
+
+        const checkoutDraftKey = 'cultbear_checkout_draft_v1';
+        const draftFields = ['name', 'email', 'phone', 'address_line', 'city', 'postal_code'];
+
+        const readDraft = () => {
+            try {
+                const payload = sessionStorage.getItem(checkoutDraftKey);
+                return payload ? JSON.parse(payload) : {};
+            } catch (error) {
+                return {};
+            }
+        };
+
+        const writeDraft = () => {
+            const draft = {};
+            draftFields.forEach((fieldName) => {
+                const field = checkoutForm.querySelector(`[name="${fieldName}"]`);
+                if (!field) {
+                    return;
+                }
+                draft[fieldName] = field.value || '';
+            });
+            sessionStorage.setItem(checkoutDraftKey, JSON.stringify(draft));
+        };
+
+        const savedDraft = readDraft();
+        draftFields.forEach((fieldName) => {
+            const field = checkoutForm.querySelector(`[name="${fieldName}"]`);
+            if (!field) {
+                return;
+            }
+
+            if (!field.value && savedDraft[fieldName]) {
+                field.value = savedDraft[fieldName];
+            }
+
+            field.addEventListener('input', writeDraft);
+            field.addEventListener('change', writeDraft);
+        });
+
+        writeDraft();
     })();
 </script>
 @endsection

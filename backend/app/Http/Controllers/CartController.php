@@ -63,7 +63,7 @@ class CartController extends Controller
             return response()->json($item, 201);
         }
 
-        return redirect('/cart')->with('status', 'Товар добавлен в корзину.');
+        return redirect('/cart');
     }
 
     public function updateItem(Request $request, int $id): JsonResponse|RedirectResponse
