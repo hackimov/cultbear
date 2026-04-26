@@ -46,7 +46,7 @@ class CatalogController extends Controller
             ->firstOrFail();
 
         $products = $theme->products()
-            ->with('variants')
+            ->with(['variants', 'media'])
             ->where('is_active', true)
             ->when($request->filled('size'), fn ($query) => $query->whereHas('variants', fn ($v) => $v->where('size', $request->string('size')->toString())))
             ->when($request->filled('model'), fn ($query) => $query->whereHas('variants', fn ($v) => $v->where('model', $request->string('model')->toString())))
