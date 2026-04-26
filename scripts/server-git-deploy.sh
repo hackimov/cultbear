@@ -39,7 +39,6 @@ elif [ -d "$DEPLOY_DIR" ]; then
 	mv "$DEPLOY_DIR" "$BACKUP"
 	git clone --branch "$BRANCH" "$REPO_URL" "$DEPLOY_DIR"
 	cd "$DEPLOY_DIR" || die "clone не создал $DEPLOY_DIR"
-	cp "$BACKUP/.env" .env 2>/dev/null || true
 	cp "$BACKUP/backend/.env" backend/.env 2>/dev/null || true
 	echo "Старые файлы сохранены в: $BACKUP (удалите вручную после проверки)."
 else
@@ -48,15 +47,16 @@ else
 	cd "$DEPLOY_DIR" || die "clone не создал $DEPLOY_DIR"
 fi
 
-if [ ! -f .env ] && [ -f .env.example ]; then
-	cp .env.example .env
-fi
 if [ ! -f backend/.env ] && [ -f backend/.env.example ]; then
 	cp backend/.env.example backend/.env
 fi
 
 docker compose up -d --build
 docker compose exec -T app composer install --no-interaction --prefer-dist --optimize-autoloader --no-dev
+
+if ! grep -qE '^APP_KEY=.+' backend/.env 2>/dev/null; then
+	docker compose exec -T app php artisan key:generate --no-interaction
+fi
 
 if [ -f scripts/fix-laravel-perms.sh ]; then
 	sh scripts/fix-laravel-perms.sh
@@ -67,4 +67,4 @@ fi
 
 docker run --rm -v "$DEPLOY_DIR/backend:/app" -w /app node:20-alpine sh -lc "npm ci && npm run build"
 
-echo "Готово. Обновления в будущем: cd $DEPLOY_DIR && git pull origin $BRANCH && docker compose up -d --build && docker compose exec -T app composer install --no-dev && sh scripts/fix-laravel-perms.sh"
+echo "Готово. Обновления: cd $DEPLOY_DIR && git pull origin $BRANCH && docker compose up -d --build && docker compose exec -T app composer install --no-dev && sh scripts/fix-laravel-perms.sh"

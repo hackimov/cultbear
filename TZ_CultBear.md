@@ -59,7 +59,7 @@
 - `worker` (очереди)
 - `scheduler` (cron/schedule:run)
 
-Подъем окружения одной командой: `docker compose up -d`.
+Подъем окружения: `docker compose up -d` (настройки в `backend/.env`, корневой `.env` не нужен).
 
 ---
 
