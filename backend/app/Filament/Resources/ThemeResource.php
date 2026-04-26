@@ -43,6 +43,7 @@ class ThemeResource extends Resource
                 Forms\Components\Textarea::make('description')->label('Описание')->rows(3),
                 Forms\Components\FileUpload::make('banner_url')
                     ->label('Баннер')
+                    ->helperText('JPEG, PNG или WebP.')
                     ->image()
                     ->disk('s3')
                     ->directory('themes/banners')
