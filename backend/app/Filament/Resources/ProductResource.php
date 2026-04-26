@@ -2,6 +2,7 @@
 
 namespace App\Filament\Resources;
 
+use App\Filament\Resources\Concerns\HasAccusativeCreateTitle;
 use App\Filament\Resources\ProductResource\Pages;
 use App\Models\Product;
 use App\Models\Theme;
@@ -13,7 +14,11 @@ use Filament\Tables\Table;
 
 class ProductResource extends Resource
 {
+    use HasAccusativeCreateTitle;
+
     protected static ?string $model = Product::class;
+
+    protected static ?string $recordTitleAttribute = 'name';
 
     protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
 
@@ -41,7 +46,8 @@ class ProductResource extends Resource
                 Forms\Components\TextInput::make('sort_order')->label('Порядок сортировки')->numeric()->default(0)->required(),
                 Forms\Components\Toggle::make('is_active')->label('Активен')->default(true),
                 Forms\Components\Repeater::make('media')
-                    ->label('Медиа')
+                    ->label('Медиафайлы')
+                    ->addActionLabel('Добавить файл')
                     ->relationship('media')
                     ->schema([
                         Forms\Components\Select::make('type')

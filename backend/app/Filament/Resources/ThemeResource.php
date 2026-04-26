@@ -2,6 +2,7 @@
 
 namespace App\Filament\Resources;
 
+use App\Filament\Resources\Concerns\HasAccusativeCreateTitle;
 use App\Filament\Resources\ThemeResource\Pages;
 use App\Models\Theme;
 use Filament\Forms;
@@ -12,6 +13,15 @@ use Filament\Tables\Table;
 
 class ThemeResource extends Resource
 {
+    use HasAccusativeCreateTitle;
+
+    protected static ?string $recordTitleAttribute = 'name';
+
+    protected static function createAccusativeLabel(): ?string
+    {
+        return 'тематику';
+    }
+
     protected static ?string $model = Theme::class;
 
     protected static ?string $navigationIcon = 'heroicon-o-swatch';
@@ -29,7 +39,16 @@ class ThemeResource extends Resource
                 Forms\Components\TextInput::make('name')->label('Название')->required()->maxLength(255),
                 Forms\Components\TextInput::make('slug')->label('Slug (URL)')->required()->unique(ignoreRecord: true),
                 Forms\Components\Textarea::make('description')->label('Описание')->rows(3),
-                Forms\Components\TextInput::make('banner_url')->label('URL баннера')->url(),
+                Forms\Components\FileUpload::make('banner_url')
+                    ->label('Баннер')
+                    ->helperText('Загрузка в S3 (как у фото товаров). JPEG, PNG или WebP.')
+                    ->image()
+                    ->disk('s3')
+                    ->directory('themes/banners')
+                    ->visibility('public')
+                    ->acceptedFileTypes(['image/jpeg', 'image/png', 'image/webp'])
+                    ->maxSize(10240)
+                    ->nullable(),
                 Forms\Components\Select::make('layout_columns')
                     ->label('Колонок в сетке')
                     ->options([2 => '2 колонки', 3 => '3 колонки', 4 => '4 колонки'])
@@ -43,6 +62,10 @@ class ThemeResource extends Resource
     {
         return $table
             ->columns([
+                Tables\Columns\ImageColumn::make('banner_url')
+                    ->label('Баннер')
+                    ->getStateUsing(fn (Theme $record): ?string => $record->banner_src)
+                    ->height(40),
                 Tables\Columns\TextColumn::make('name')->label('Название')->searchable()->sortable(),
                 Tables\Columns\TextColumn::make('slug')->label('Slug')->searchable(),
                 Tables\Columns\TextColumn::make('layout_columns')->label('Сетка'),

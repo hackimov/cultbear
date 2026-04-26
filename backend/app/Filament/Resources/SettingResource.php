@@ -2,6 +2,7 @@
 
 namespace App\Filament\Resources;
 
+use App\Filament\Resources\Concerns\HasAccusativeCreateTitle;
 use App\Filament\Resources\SettingResource\Pages;
 use App\Models\Setting;
 use Filament\Forms\Form;
@@ -11,7 +12,16 @@ use Filament\Tables\Table;
 
 class SettingResource extends Resource
 {
+    use HasAccusativeCreateTitle;
+
     protected static bool $shouldRegisterNavigation = false;
+
+    protected static function createAccusativeLabel(): ?string
+    {
+        return 'настройку';
+    }
+
+    protected static ?string $recordTitleAttribute = 'key';
 
     protected static ?string $model = Setting::class;
 

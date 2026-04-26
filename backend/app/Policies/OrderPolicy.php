@@ -23,11 +23,11 @@ class OrderPolicy
     }
 
     /**
-     * Determine whether the user can create models.
+     * Заказы создаются только при оформлении на сайте (корзина / оплата).
      */
     public function create(User $user): bool
     {
-        return $user->can('manage orders');
+        return false;
     }
 
     /**

@@ -2,6 +2,7 @@
 
 namespace App\Filament\Resources;
 
+use App\Filament\Resources\Concerns\HasAccusativeCreateTitle;
 use App\Filament\Resources\UserResource\Pages;
 use App\Models\User;
 use Filament\Forms;
@@ -14,6 +15,15 @@ use Spatie\Permission\Models\Role;
 
 class UserResource extends Resource
 {
+    use HasAccusativeCreateTitle;
+
+    protected static ?string $recordTitleAttribute = 'name';
+
+    protected static function createAccusativeLabel(): ?string
+    {
+        return 'пользователя';
+    }
+
     protected static function roleTitle(string $name): string
     {
         return match ($name) {

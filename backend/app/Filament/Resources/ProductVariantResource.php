@@ -2,6 +2,7 @@
 
 namespace App\Filament\Resources;
 
+use App\Filament\Resources\Concerns\HasAccusativeCreateTitle;
 use App\Filament\Resources\ProductVariantResource\Pages;
 use App\Models\Product;
 use App\Models\ProductVariant;
@@ -13,7 +14,11 @@ use Filament\Tables\Table;
 
 class ProductVariantResource extends Resource
 {
+    use HasAccusativeCreateTitle;
+
     protected static ?string $model = ProductVariant::class;
+
+    protected static ?string $recordTitleAttribute = 'sku_variant';
 
     protected static ?string $navigationIcon = 'heroicon-o-squares-2x2';
 
