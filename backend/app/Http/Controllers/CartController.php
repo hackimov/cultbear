@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Cart;
 use App\Models\CartItem;
 use App\Models\ProductVariant;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
@@ -30,7 +31,7 @@ class CartController extends Controller
         ]);
     }
 
-    public function storeItem(Request $request): JsonResponse
+    public function storeItem(Request $request): JsonResponse | RedirectResponse
     {
         $validated = $request->validate([
             'product_variant_id' => ['required', 'integer', 'exists:product_variants,id'],
@@ -38,6 +39,15 @@ class CartController extends Controller
         ]);
 
         $variant = ProductVariant::query()->findOrFail($validated['product_variant_id']);
+
+        if (! $variant->is_active || $variant->stock_quantity < (int) $validated['quantity']) {
+            if ($request->expectsJson()) {
+                return response()->json(['message' => 'Вариант недоступен или закончился на складе.'], 422);
+            }
+
+            return back()->with('error', 'Выбранный вариант недоступен или закончился на складе.');
+        }
+
         $cart = $this->resolveCart($request);
 
         $item = CartItem::query()->firstOrNew([
@@ -48,7 +58,11 @@ class CartController extends Controller
         $item->unit_price = $variant->price;
         $item->save();
 
-        return response()->json($item, 201);
+        if ($request->expectsJson()) {
+            return response()->json($item, 201);
+        }
+
+        return redirect('/cart')->with('status', 'Товар добавлен в корзину.');
     }
 
     public function updateItem(Request $request, int $id): JsonResponse

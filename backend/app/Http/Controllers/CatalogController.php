@@ -73,7 +73,13 @@ class CatalogController extends Controller
     public function product(string $slug, Request $request): JsonResponse|View
     {
         $product = Product::query()
-            ->with('variants')
+            ->with([
+                'media',
+                'variants' => fn ($query) => $query
+                    ->where('is_active', true)
+                    ->where('stock_quantity', '>', 0)
+                    ->orderBy('id'),
+            ])
             ->where('slug', $slug)
             ->where('is_active', true)
             ->firstOrFail();
