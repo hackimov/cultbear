@@ -83,6 +83,10 @@
         overflow: auto;
     }
 
+    .checkout-hidden {
+        display: none;
+    }
+
     .checkout-address-suggestion {
         width: 100%;
         text-align: left;
@@ -118,6 +122,24 @@
 
     .checkout-submit-btn:hover {
         background: #27272a;
+    }
+
+    .checkout-delete-btn {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        min-width: 40px;
+        height: 36px;
+        padding: 0 0.75rem;
+        border: 1px solid #fecaca;
+        border-radius: 0.75rem;
+        background: #fef2f2;
+        color: #b91c1c;
+    }
+
+    .checkout-delete-btn svg {
+        width: 18px;
+        height: 18px;
     }
 
     @media (min-width: 1024px) {
@@ -179,7 +201,7 @@
                             </div>
 
                             <div class="flex flex-wrap items-center justify-between gap-3">
-                                <form method="POST" action="/cart/items/{{ $item->id }}" class="flex items-center gap-2">
+                                <form method="POST" action="/cart/items/{{ $item->id }}" class="flex items-center gap-2" data-cart-item-form>
                                     @csrf
                                     @method('PATCH')
                                     <span class="text-sm font-semibold">Количество</span>
@@ -188,14 +210,18 @@
                                         <input type="number" min="1" name="quantity" value="{{ $item->quantity }}" class="checkout-qty-input" data-qty-input>
                                         <button type="button" class="checkout-qty-btn" data-qty-plus>+</button>
                                     </div>
-                                    <button type="submit" class="rounded-lg border border-zinc-300 px-3 py-1.5 text-xs font-semibold">Обновить</button>
                                 </form>
 
                                 <form method="POST" action="/cart/items/{{ $item->id }}">
                                     @csrf
                                     @method('DELETE')
-                                    <button type="submit" class="rounded-lg border border-red-200 bg-red-50 px-3 py-1.5 text-xs font-semibold text-red-700">
-                                        Удалить
+                                    <button type="submit" class="checkout-delete-btn" aria-label="Удалить" title="Удалить">
+                                        <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                                            <path d="M4 7h16" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+                                            <path d="M9.5 3.5h5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+                                            <path d="M7 7l.8 12.2A2 2 0 0 0 9.8 21h4.4a2 2 0 0 0 2-1.8L17 7" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+                                            <path d="M10 11v6M14 11v6" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+                                        </svg>
                                     </button>
                                 </form>
                             </div>
@@ -244,7 +270,7 @@
                                 data-city-target="#checkout_city"
                                 data-postal-target="#checkout_postal_code"
                             >
-                            <div class="checkout-address-suggestions hidden" data-address-suggestions></div>
+                            <div class="checkout-address-suggestions checkout-hidden" data-address-suggestions></div>
                         </div>
 
                         <div class="grid gap-3 sm:grid-cols-2">
@@ -270,7 +296,7 @@
 
 <script>
     (() => {
-        document.querySelectorAll('form').forEach((form) => {
+        document.querySelectorAll('[data-cart-item-form]').forEach((form) => {
             const qtyInput = form.querySelector('[data-qty-input]');
             const minusButton = form.querySelector('[data-qty-minus]');
             const plusButton = form.querySelector('[data-qty-plus]');
@@ -278,15 +304,25 @@
                 return;
             }
 
+            const submitQuantity = () => {
+                const current = Math.max(1, Number(qtyInput.value || 1));
+                qtyInput.value = String(current);
+                form.requestSubmit();
+            };
+
             minusButton.addEventListener('click', () => {
                 const current = Math.max(1, Number(qtyInput.value || 1) - 1);
                 qtyInput.value = String(current);
+                submitQuantity();
             });
 
             plusButton.addEventListener('click', () => {
                 const current = Math.max(1, Number(qtyInput.value || 1) + 1);
                 qtyInput.value = String(current);
+                submitQuantity();
             });
+
+            qtyInput.addEventListener('change', submitQuantity);
         });
 
         const addressInput = document.querySelector('[data-address-input]');
@@ -301,18 +337,27 @@
         let debounceTimer = null;
         let lastQuery = '';
 
+        const showSuggestions = () => {
+            suggestionsWrap.classList.remove('checkout-hidden');
+        };
+
         const hideSuggestions = () => {
-            suggestionsWrap.classList.add('hidden');
+            suggestionsWrap.classList.add('checkout-hidden');
             suggestionsWrap.innerHTML = '';
         };
 
-        const renderSuggestions = (items) => {
+        const renderSuggestions = (items, emptyText = 'Подсказки не найдены') => {
+            suggestionsWrap.innerHTML = '';
+
             if (!Array.isArray(items) || items.length === 0) {
-                hideSuggestions();
+                const emptyNode = document.createElement('div');
+                emptyNode.className = 'checkout-address-suggestion';
+                emptyNode.textContent = emptyText;
+                suggestionsWrap.appendChild(emptyNode);
+                showSuggestions();
                 return;
             }
 
-            suggestionsWrap.innerHTML = '';
             items.forEach((item) => {
                 const button = document.createElement('button');
                 button.type = 'button';
@@ -331,23 +376,24 @@
                 suggestionsWrap.appendChild(button);
             });
 
-            suggestionsWrap.classList.remove('hidden');
+            showSuggestions();
         };
 
         const fetchSuggestions = async (query) => {
+            renderSuggestions([], 'Поиск адреса...');
             try {
                 const response = await fetch(`/checkout/address-suggestions?query=${encodeURIComponent(query)}`, {
                     headers: { 'Accept': 'application/json' },
                 });
                 if (!response.ok) {
-                    hideSuggestions();
+                    renderSuggestions([], 'Не удалось загрузить подсказки');
                     return;
                 }
 
                 const payload = await response.json();
                 renderSuggestions(payload?.suggestions || []);
             } catch (error) {
-                hideSuggestions();
+                renderSuggestions([], 'Не удалось загрузить подсказки');
             }
         };
 
