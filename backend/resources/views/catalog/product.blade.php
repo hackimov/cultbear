@@ -1,7 +1,7 @@
 @extends('layouts.app', ['title' => $product->name.' — CultBear'])
 
 @section('content')
-    <section class="mx-auto max-w-7xl px-4 py-8 md:py-10">
+    <section class="mx-auto max-w-6xl px-4 py-8 md:py-10">
         @php
             $imageUrls = $product->media
                 ->sortByDesc(fn ($media) => (bool) $media->is_primary)
@@ -23,44 +23,48 @@
                 ->all();
         @endphp
 
-        <div class="grid gap-8 lg:grid-cols-[minmax(0,1fr)_380px]">
-            <div class="js-product-carousel rounded-2xl border border-zinc-200 bg-zinc-50 p-4 sm:p-6" data-images='@json($imageUrls)'>
+        <div class="grid items-start gap-8 lg:grid-cols-[minmax(0,1fr)_380px]">
+            <div class="mx-auto w-full max-w-3xl">
+                <div class="js-product-carousel rounded-2xl border border-zinc-200 bg-zinc-50 p-4 sm:p-6" data-images='@json($imageUrls)'>
                 @if(! empty($imageUrls))
-                    <div class="relative overflow-hidden rounded-xl bg-white">
+                    <div class="relative overflow-hidden rounded-xl bg-white shadow-sm">
                         <img
                             src="{{ $imageUrls[0] }}"
                             alt="{{ $product->name }}"
-                            class="aspect-square max-h-[680px] w-full object-cover"
+                            class="aspect-square max-h-[640px] w-full object-cover"
                             data-carousel-image
                         >
 
                         @if(count($imageUrls) > 1)
                             <button
                                 type="button"
-                                class="absolute left-3 top-1/2 -translate-y-1/2 rounded-full border border-zinc-200 bg-white/95 px-3 py-2 text-base font-semibold text-zinc-900 shadow-sm"
+                                class="absolute left-3 top-1/2 z-10 inline-flex h-10 w-10 -translate-y-1/2 items-center justify-center rounded-full border border-zinc-200 bg-white/95 text-lg font-semibold text-zinc-900 shadow-sm transition hover:bg-white"
                                 aria-label="Предыдущее фото"
                                 data-carousel-prev
-                            >←</button>
+                            >&larr;</button>
 
                             <button
                                 type="button"
-                                class="absolute right-3 top-1/2 -translate-y-1/2 rounded-full border border-zinc-200 bg-white/95 px-3 py-2 text-base font-semibold text-zinc-900 shadow-sm"
+                                class="absolute right-3 top-1/2 z-10 inline-flex h-10 w-10 -translate-y-1/2 items-center justify-center rounded-full border border-zinc-200 bg-white/95 text-lg font-semibold text-zinc-900 shadow-sm transition hover:bg-white"
                                 aria-label="Следующее фото"
                                 data-carousel-next
-                            >→</button>
+                            >&rarr;</button>
                         @endif
                     </div>
 
                     @if(count($imageUrls) > 1)
-                        <div class="mt-4 flex items-center justify-between gap-4">
-                            <div class="hidden sm:flex items-center gap-2 overflow-x-auto py-1" data-carousel-thumbs></div>
-                            <div class="flex items-center gap-2" data-carousel-dots></div>
-                            <div class="text-xs font-medium text-zinc-500 tabular-nums" data-carousel-count></div>
+                        <div class="mt-4 space-y-3">
+                            <div class="hidden gap-2 overflow-x-auto py-1 sm:flex" data-carousel-thumbs></div>
+                            <div class="flex items-center justify-between gap-3">
+                                <div class="flex items-center gap-2" data-carousel-dots></div>
+                                <div class="rounded-md bg-zinc-200/70 px-2.5 py-1 text-xs font-semibold text-zinc-600 tabular-nums" data-carousel-count></div>
+                            </div>
                         </div>
                     @endif
                 @else
                     <div class="aspect-square rounded-xl bg-zinc-200"></div>
                 @endif
+            </div>
             </div>
 
             <div class="space-y-4 lg:sticky lg:top-6 lg:self-start">
@@ -77,15 +81,22 @@
                     <p class="rounded-lg border border-red-200 bg-red-50 p-3 text-sm text-red-700">{{ session('error') }}</p>
                 @endif
 
+                @if($errors->any())
+                    <div class="rounded-lg border border-red-200 bg-red-50 p-3 text-sm text-red-700">
+                        {{ $errors->first() }}
+                    </div>
+                @endif
+
                 @if($product->variants->isNotEmpty())
                     <form method="POST" action="/cart/items" class="rounded-2xl border border-zinc-200 bg-white p-5 shadow-sm space-y-4 js-buy-box">
                         @csrf
-                        @php($firstVariant = $product->variants->first())
+                        @php($selectedVariantId = old('product_variant_id'))
+                        @php($selectedVariant = $product->variants->firstWhere('id', (int) $selectedVariantId) ?: $product->variants->first())
 
                         <div class="rounded-xl bg-zinc-900 p-4 text-white">
                             <div class="text-xs uppercase tracking-wide text-zinc-300">Цена</div>
                             <div class="mt-1 text-3xl font-black" data-variant-price>
-                                {{ number_format($firstVariant->price, 0, '.', ' ') }} ₽
+                                {{ number_format($selectedVariant->price, 0, '.', ' ') }} ₽
                             </div>
                         </div>
 
@@ -93,7 +104,11 @@
                             <label for="product_variant_id" class="mb-1.5 block text-sm font-semibold">Вариант</label>
                             <select id="product_variant_id" name="product_variant_id" class="w-full rounded-xl border border-zinc-300 px-3 py-3 text-sm" required>
                                 @foreach($product->variants as $variant)
-                                    <option value="{{ $variant->id }}" data-price="{{ $variant->price }}">
+                                    <option
+                                        value="{{ $variant->id }}"
+                                        data-price="{{ $variant->price }}"
+                                        @selected((int) old('product_variant_id', $selectedVariant->id) === $variant->id)
+                                    >
                                         {{ $variant->model }} / {{ $variant->size }} / {{ $variant->color }}
                                     </option>
                                 @endforeach
@@ -107,7 +122,7 @@
                                 <input
                                     type="number"
                                     name="quantity"
-                                    value="1"
+                                    value="{{ old('quantity', 1) }}"
                                     min="1"
                                     class="w-14 border-x border-zinc-300 py-2 text-center text-sm outline-none"
                                     data-qty-input
@@ -184,7 +199,7 @@
                         if (thumbsWrap) {
                             images.forEach((image, index) => {
                                 const thumb = buildIndicatorButton(
-                                    'h-14 w-14 shrink-0 overflow-hidden rounded-lg border-2 border-transparent bg-white',
+                                    'h-14 w-14 shrink-0 overflow-hidden rounded-lg border-2 border-transparent bg-white transition',
                                     () => show(index)
                                 );
                                 thumb.innerHTML = `<img src="${image}" alt="" class="h-full w-full object-cover">`;
@@ -196,6 +211,7 @@
                         const show = (index) => {
                             activeIndex = (index + images.length) % images.length;
                             imageNode.src = images[activeIndex];
+                            imageNode.alt = `${@json($product->name)} (${activeIndex + 1}/${images.length})`;
 
                             dots.forEach((dot, dotIndex) => {
                                 dot.className = dotIndex === activeIndex
