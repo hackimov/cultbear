@@ -29,6 +29,7 @@ class AdminPanelProvider extends PanelProvider
             ->path('admin')
             ->login()
             ->brandName('CultBear')
+            ->brandLogo(fn () => view('filament.components.admin-logo'))
             ->colors([
                 'primary' => Color::Amber,
             ])
