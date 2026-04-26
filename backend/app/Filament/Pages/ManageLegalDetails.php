@@ -25,7 +25,7 @@ class ManageLegalDetails extends Page
 
     protected static ?string $navigationLabel = 'Реквизиты';
 
-    protected static ?int $navigationSort = 15;
+    protected static ?int $navigationSort = 6;
 
     protected static ?string $slug = 'legal-details';
 

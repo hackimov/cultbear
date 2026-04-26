@@ -28,6 +28,8 @@ class ProductVariantResource extends Resource
 
     protected static ?string $navigationLabel = 'Варианты';
 
+    protected static ?int $navigationSort = 2;
+
     public static function form(Form $form): Form
     {
         return $form
@@ -35,6 +37,7 @@ class ProductVariantResource extends Resource
                 Forms\Components\Select::make('product_id')
                     ->label('Товар')
                     ->options(Product::query()->pluck('name', 'id'))
+                    ->placeholder('Выберите товар')
                     ->required()
                     ->searchable(),
                 Forms\Components\TextInput::make('model')->label('Модель')->required(),

@@ -28,6 +28,8 @@ class ProductResource extends Resource
 
     protected static ?string $navigationLabel = 'Товары';
 
+    protected static ?int $navigationSort = 3;
+
     public static function form(Form $form): Form
     {
         return $form
@@ -35,6 +37,7 @@ class ProductResource extends Resource
                 Forms\Components\Select::make('theme_id')
                     ->label('Тематика')
                     ->options(Theme::query()->orderBy('sort_order')->pluck('name', 'id'))
+                    ->placeholder('Выберите тематику')
                     ->required()
                     ->searchable(),
                 Forms\Components\TextInput::make('name')->label('Название')->required(),
