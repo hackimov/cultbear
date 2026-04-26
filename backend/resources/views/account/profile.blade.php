@@ -1,51 +1,176 @@
 @extends('layouts.app', ['title' => 'Профиль — CultBear'])
 
 @section('content')
-<section class="mx-auto w-full max-w-3xl px-4 py-10 md:py-14">
-    <div class="rounded-2xl border border-zinc-200 bg-white p-5 shadow-sm md:p-7">
-        <h1 class="text-2xl font-black md:text-3xl">Профиль</h1>
-        <p class="mt-2 text-sm text-zinc-600">Измените имя и адрес доставки, чтобы оформление заказа занимало меньше времени.</p>
+<style>
+    .profile-page-wrap {
+        max-width: 820px;
+        margin: 0 auto;
+        padding: 2.5rem 1rem 3rem;
+    }
+
+    .profile-card {
+        border: 1px solid #e4e4e7;
+        border-radius: 1rem;
+        background: #fff;
+        padding: 1.5rem;
+    }
+
+    .profile-title {
+        margin: 0;
+        font-size: 1.625rem;
+        line-height: 1.2;
+        font-weight: 800;
+        color: #09090b;
+    }
+
+    .profile-subtitle {
+        margin: 0.5rem 0 0;
+        font-size: 0.875rem;
+        line-height: 1.45;
+        color: #52525b;
+    }
+
+    .profile-alert {
+        margin-top: 1rem;
+        border-radius: 0.625rem;
+        padding: 0.75rem;
+        font-size: 0.875rem;
+        line-height: 1.35;
+    }
+
+    .profile-alert-success {
+        border: 1px solid #bbf7d0;
+        background: #f0fdf4;
+        color: #166534;
+    }
+
+    .profile-alert-error {
+        border: 1px solid #fecaca;
+        background: #fef2f2;
+        color: #b91c1c;
+    }
+
+    .profile-form {
+        margin-top: 1.5rem;
+        display: grid;
+        gap: 1rem;
+    }
+
+    .profile-field {
+        display: grid;
+        gap: 0.375rem;
+    }
+
+    .profile-label {
+        font-size: 0.875rem;
+        font-weight: 600;
+        color: #3f3f46;
+    }
+
+    .profile-input {
+        width: 100%;
+        border: 1px solid #d4d4d8;
+        border-radius: 0.625rem;
+        padding: 0.625rem 0.75rem;
+        font-size: 0.875rem;
+        line-height: 1.25;
+        color: #09090b;
+        background: #fff;
+        outline: none;
+    }
+
+    .profile-input:focus {
+        border-color: #18181b;
+        box-shadow: 0 0 0 1px #18181b;
+    }
+
+    .profile-grid-2 {
+        display: grid;
+        gap: 0.875rem;
+    }
+
+    .profile-submit {
+        margin-top: 0.25rem;
+        width: 100%;
+        border: 0;
+        border-radius: 0.625rem;
+        background: #000;
+        color: #fff;
+        padding: 0.75rem 1.25rem;
+        font-size: 0.875rem;
+        font-weight: 600;
+        line-height: 1.2;
+    }
+
+    .profile-submit:hover {
+        background: #27272a;
+    }
+
+    @media (min-width: 640px) {
+        .profile-page-wrap {
+            padding-top: 3rem;
+        }
+
+        .profile-card {
+            padding: 1.75rem;
+        }
+
+        .profile-grid-2 {
+            grid-template-columns: 1fr 1fr;
+        }
+
+        .profile-submit {
+            width: auto;
+            min-width: 220px;
+        }
+    }
+</style>
+
+<section class="profile-page-wrap">
+    <div class="profile-card">
+        <h1 class="profile-title">Профиль</h1>
+        <p class="profile-subtitle">Измените имя и адрес доставки, чтобы оформление заказа занимало меньше времени.</p>
 
         @if(session('status'))
-            <p class="mt-4 rounded-lg border border-emerald-200 bg-emerald-50 p-3 text-sm text-emerald-800">{{ session('status') }}</p>
+            <p class="profile-alert profile-alert-success">{{ session('status') }}</p>
         @endif
 
         @if($errors->any())
-            <p class="mt-4 rounded-lg border border-red-200 bg-red-50 p-3 text-sm text-red-700">{{ $errors->first() }}</p>
+            <p class="profile-alert profile-alert-error">{{ $errors->first() }}</p>
         @endif
 
-        <form method="POST" action="/account/profile" class="mt-6 space-y-4">
+        <form method="POST" action="/account/profile" class="profile-form">
             @csrf
             @method('PUT')
 
-            <div class="space-y-1.5">
-                <label for="name" class="block text-sm font-semibold">Имя</label>
-                <input id="name" name="name" value="{{ old('name', $user->name) }}" required class="w-full rounded-xl border border-zinc-300 px-3 py-2.5 text-sm">
+            <div class="profile-field">
+                <label for="name" class="profile-label">Имя</label>
+                <input id="name" name="name" value="{{ old('name', $user->name) }}" required class="profile-input">
             </div>
 
-            <div class="space-y-1.5">
-                <label for="phone" class="block text-sm font-semibold">Телефон</label>
-                <input id="phone" name="phone" value="{{ old('phone', $user->phone) }}" placeholder="+7 (___) ___-__-__" class="w-full rounded-xl border border-zinc-300 px-3 py-2.5 text-sm">
+            <div class="profile-field">
+                <label for="phone" class="profile-label">Телефон</label>
+                <input id="phone" name="phone" value="{{ old('phone', $user->phone) }}" placeholder="+7 (___) ___-__-__" class="profile-input">
             </div>
 
-            <div class="space-y-1.5">
-                <label for="address_line" class="block text-sm font-semibold">Адрес доставки</label>
-                <input id="address_line" name="address_line" value="{{ old('address_line', $user->address_line) }}" placeholder="Улица, дом, квартира" class="w-full rounded-xl border border-zinc-300 px-3 py-2.5 text-sm">
+            <div class="profile-field">
+                <label for="address_line" class="profile-label">Адрес доставки</label>
+                <input id="address_line" name="address_line" value="{{ old('address_line', $user->address_line) }}" placeholder="Улица, дом, квартира" class="profile-input">
             </div>
 
-            <div class="grid gap-3 sm:grid-cols-2">
-                <div class="space-y-1.5">
-                    <label for="city" class="block text-sm font-semibold">Город</label>
-                    <input id="city" name="city" value="{{ old('city', $user->city) }}" class="w-full rounded-xl border border-zinc-300 px-3 py-2.5 text-sm">
+            <div class="profile-grid-2">
+                <div class="profile-field">
+                    <label for="city" class="profile-label">Город</label>
+                    <input id="city" name="city" value="{{ old('city', $user->city) }}" class="profile-input">
                 </div>
 
-                <div class="space-y-1.5">
-                    <label for="postal_code" class="block text-sm font-semibold">Индекс</label>
-                    <input id="postal_code" name="postal_code" value="{{ old('postal_code', $user->postal_code) }}" class="w-full rounded-xl border border-zinc-300 px-3 py-2.5 text-sm">
+                <div class="profile-field">
+                    <label for="postal_code" class="profile-label">Индекс</label>
+                    <input id="postal_code" name="postal_code" value="{{ old('postal_code', $user->postal_code) }}" class="profile-input">
                 </div>
             </div>
 
-            <button type="submit" class="w-full rounded-xl bg-black px-6 py-3 text-sm font-semibold text-white hover:bg-zinc-800 sm:w-auto">
+            <button type="submit" class="profile-submit">
                 Сохранить изменения
             </button>
         </form>
