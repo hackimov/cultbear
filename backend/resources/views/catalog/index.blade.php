@@ -126,7 +126,7 @@
                 <img src="{{ url('/logo-without-text.svg') }}" alt="CultBear" width="350" height="345" class="home-hero-logo block">
                 <h1 class="home-hero-title text-4xl font-black leading-tight md:text-5xl">Cultbear - патриотизм начинается с тебя</h1>
                 <p class="home-hero-description text-zinc-700">Современный каталог с акцентом на черные модели, качественную печать и удобный заказ онлайн.</p>
-                <a href="{{ $themes->first() ? '/themes/'.$themes->first()->slug : '#' }}" class="home-hero-cta inline-block rounded bg-black px-6 py-3 text-sm font-semibold text-white">
+                <a href="/catalog" class="home-hero-cta inline-block rounded bg-black px-6 py-3 text-sm font-semibold text-white">
                     Перейти в каталог
                 </a>
             </div>

@@ -48,6 +48,48 @@ class CatalogController extends Controller
         ]);
     }
 
+    public function catalog(Request $request): JsonResponse|View
+    {
+        $themes = Theme::query()
+            ->where('is_active', true)
+            ->where('is_home_theme', false)
+            ->orderBy('sort_order')
+            ->get();
+
+        $themeSlugFromRequest = $request->string('theme')->toString();
+        $selectedTheme = $themeSlugFromRequest !== ''
+            ? $themes->firstWhere('slug', $themeSlugFromRequest)
+            : null;
+        $selectedThemeSlug = $selectedTheme?->slug ?? '';
+
+        $products = Product::query()
+            ->with(['variants', 'media', 'theme'])
+            ->where('is_active', true)
+            ->when($request->string('search')->isNotEmpty(), function ($query) use ($request) {
+                $search = $request->string('search')->toString();
+                $query->where(function ($subQuery) use ($search) {
+                    $subQuery->where('name', 'ilike', "%{$search}%")
+                        ->orWhere('article', 'ilike', "%{$search}%");
+                });
+            })
+            ->when($selectedTheme, fn ($query) => $query->where('theme_id', $selectedTheme->id))
+            ->orderByDesc('is_pinned')
+            ->orderBy('sort_order')
+            ->paginate(24)
+            ->withQueryString();
+
+        if ($request->expectsJson()) {
+            return response()->json($products);
+        }
+
+        return view('catalog.catalog', [
+            'products' => $products,
+            'themes' => $themes,
+            'selectedThemeSlug' => $selectedThemeSlug,
+            'legal' => Setting::getValue('legal_details', []),
+        ]);
+    }
+
     public function theme(string $slug, Request $request): JsonResponse|View
     {
         $theme = Theme::query()

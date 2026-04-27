@@ -12,6 +12,7 @@ use App\Http\Controllers\Webhook\TochkaWebhookController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', [CatalogController::class, 'index']);
+Route::get('/catalog', [CatalogController::class, 'catalog']);
 Route::get('/themes/{slug}', [CatalogController::class, 'theme']);
 Route::get('/products/{slug}', [CatalogController::class, 'product']);
 
