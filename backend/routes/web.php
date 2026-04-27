@@ -28,6 +28,7 @@ Route::get('/about', [PageController::class, 'about']);
 Route::get('/delivery', [PageController::class, 'delivery']);
 Route::get('/contacts', [PageController::class, 'contacts']);
 Route::get('/privacy-policy', [PageController::class, 'privacy']);
+Route::get('/personal-data-policy', [PageController::class, 'personalDataPolicy']);
 Route::get('/terms', [PageController::class, 'terms']);
 Route::get('/payment/success', [PageController::class, 'paymentSuccess']);
 Route::get('/payment/failed', [PageController::class, 'paymentFailed']);

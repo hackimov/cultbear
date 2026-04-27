@@ -27,6 +27,11 @@ class PageController extends Controller
         return view('pages.privacy', $this->sharedData());
     }
 
+    public function personalDataPolicy(): View
+    {
+        return view('pages.personal-data-policy', $this->sharedData());
+    }
+
     public function terms(): View
     {
         return view('pages.terms', $this->sharedData());

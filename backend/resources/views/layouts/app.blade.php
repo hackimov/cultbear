@@ -74,6 +74,7 @@
             <p>{{ $legal['email'] ?? 'info@cultbear.local' }} | {{ $legal['phone'] ?? '+7 (999) 000-00-00' }}</p>
             <div class="mt-2 flex gap-4">
                 <a href="/privacy-policy">Политика конфиденциальности</a>
+                <a href="/personal-data-policy">Политика обработки ПДн</a>
                 <a href="/terms">Пользовательское соглашение</a>
             </div>
         </div>

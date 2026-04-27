@@ -24,6 +24,7 @@ class CheckoutController extends Controller
             'name' => ['required', 'string', 'max:255'],
             'email' => ['required', 'email'],
             'phone' => ['required', 'string', 'max:20'],
+            'personal_data_consent' => [$request->user() ? 'nullable' : 'accepted'],
             'address' => ['nullable', 'array'],
             'address.value' => ['nullable', 'string', 'max:255', 'required_without:address_line'],
             'address.city' => ['nullable', 'string', 'max:120'],

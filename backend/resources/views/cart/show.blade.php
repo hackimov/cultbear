@@ -332,6 +332,27 @@
                                 <input id="checkout_postal_code" name="postal_code" value="{{ old('postal_code', $user?->postal_code) }}" class="w-full rounded-xl border border-zinc-300 px-3 py-2.5 text-sm">
                             </div>
                         </div>
+
+                        @guest
+                            <label class="flex items-start gap-2 text-sm text-zinc-700">
+                                <input
+                                    type="checkbox"
+                                    name="personal_data_consent"
+                                    value="1"
+                                    required
+                                    @checked(old('personal_data_consent'))
+                                    class="mt-0.5 h-4 w-4 rounded border-zinc-300 text-zinc-900 focus:ring-zinc-900"
+                                >
+                                <span>
+                                    Я даю согласие на обработку персональных данных и принимаю
+                                    <a href="/privacy-policy" class="underline">Политику конфиденциальности</a> и
+                                    <a href="/personal-data-policy" class="underline">Политику обработки персональных данных</a>.
+                                </span>
+                            </label>
+                            @error('personal_data_consent')
+                                <p class="text-sm text-red-700">{{ $message }}</p>
+                            @enderror
+                        @endguest
                     </div>
 
                     <div class="checkout-submit-wrap">
