@@ -2,6 +2,56 @@
 
 @section('content')
     <style>
+        .home-hero-section {
+            padding: 3rem 1.25rem 3.5rem;
+        }
+
+        .home-hero-grid {
+            max-width: 1180px;
+            margin: 0 auto;
+            display: grid;
+            gap: 2.25rem;
+            align-items: center;
+        }
+
+        .home-hero-logo {
+            width: 280px;
+            max-width: 100%;
+            height: auto;
+            margin-bottom: 0.875rem;
+        }
+
+        .home-hero-title {
+            margin: 0;
+            max-width: 640px;
+        }
+
+        .home-hero-description {
+            margin-top: 1rem;
+            max-width: 620px;
+        }
+
+        .home-hero-cta {
+            margin-top: 1.75rem;
+        }
+
+        .home-hero-side {
+            display: flex;
+            justify-content: center;
+        }
+
+        .home-hero-main-theme {
+            width: 100%;
+            max-width: 520px;
+        }
+
+        .home-hero-fallback-image {
+            max-width: 520px;
+            max-height: 420px;
+            width: 100%;
+            object-fit: contain;
+        }
+
         .home-cards-grid {
             margin-top: 1.5rem;
         }
@@ -55,21 +105,34 @@
             font-weight: 700;
             color: #18181b;
         }
+
+        @media (min-width: 768px) {
+            .home-hero-section {
+                padding: 3.75rem 2rem 4rem;
+            }
+        }
+
+        @media (min-width: 1024px) {
+            .home-hero-grid {
+                grid-template-columns: minmax(0, 1fr) minmax(0, 520px);
+                gap: 2.75rem;
+            }
+        }
     </style>
 
-    <section class="hero-observe relative overflow-hidden bg-zinc-100">
-        <div class="mx-auto grid max-w-7xl gap-8 px-4 py-16 md:grid-cols-2 md:py-24">
+    <section class="hero-observe home-hero-section relative overflow-hidden bg-zinc-100">
+        <div class="home-hero-grid">
             <div>
-                <img src="{{ url('/logo-without-text.svg') }}" alt="CultBear" width="350" height="345" class="mb-4 block">
-                <h1 class="text-4xl font-black leading-tight md:text-5xl">Cultbear - патриотизм начинается с тебя</h1>
-                <p class="mt-4 max-w-xl text-zinc-700">Современный каталог с акцентом на черные модели, качественную печать и удобный заказ онлайн.</p>
-                <a href="{{ $themes->first() ? '/themes/'.$themes->first()->slug : '#' }}" class="mt-8 inline-block rounded bg-black px-6 py-3 text-sm font-semibold text-white">
+                <img src="{{ url('/logo-without-text.svg') }}" alt="CultBear" width="350" height="345" class="home-hero-logo block">
+                <h1 class="home-hero-title text-4xl font-black leading-tight md:text-5xl">Cultbear - патриотизм начинается с тебя</h1>
+                <p class="home-hero-description text-zinc-700">Современный каталог с акцентом на черные модели, качественную печать и удобный заказ онлайн.</p>
+                <a href="{{ $themes->first() ? '/themes/'.$themes->first()->slug : '#' }}" class="home-hero-cta inline-block rounded bg-black px-6 py-3 text-sm font-semibold text-white">
                     Перейти в каталог
                 </a>
             </div>
-            <div class="flex h-auto items-center justify-center md:h-96">
+            <div class="home-hero-side">
                 @if($homeTheme)
-                    <a href="/themes/{{ $homeTheme->slug }}" class="home-card w-full max-w-md">
+                    <a href="/themes/{{ $homeTheme->slug }}" class="home-card home-hero-main-theme">
                         <div class="home-card-media">
                             @if($homeTheme->banner_src)
                                 <img src="{{ $homeTheme->banner_src }}" alt="{{ $homeTheme->name }}" class="aspect-[16/10] w-full object-cover">
@@ -81,7 +144,7 @@
                         <p class="home-card-description">{{ $homeTheme->description ?? 'Главная тематика CultBear.' }}</p>
                     </a>
                 @else
-                    <img src="{{ url('/t-shirt.png') }}" alt="Футболка CultBear" class="max-h-full w-auto object-contain">
+                    <img src="{{ url('/t-shirt.png') }}" alt="Футболка CultBear" class="home-hero-fallback-image">
                 @endif
             </div>
         </div>
