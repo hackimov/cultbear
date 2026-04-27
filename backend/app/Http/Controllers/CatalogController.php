@@ -31,9 +31,19 @@ class CatalogController extends Controller
             return response()->json($products);
         }
 
+        $themes = Theme::query()
+            ->where('is_active', true)
+            ->where('is_home_theme', false)
+            ->orderBy('sort_order')
+            ->get();
+
         return view('catalog.index', [
             'products' => $products,
-            'themes' => Theme::query()->where('is_active', true)->orderBy('sort_order')->get(),
+            'themes' => $themes,
+            'homeTheme' => Theme::query()
+                ->where('is_active', true)
+                ->where('is_home_theme', true)
+                ->first(),
             'legal' => Setting::getValue('legal_details', []),
         ]);
     }
@@ -65,7 +75,7 @@ class CatalogController extends Controller
         return view('catalog.theme', [
             'theme' => $theme,
             'products' => $products,
-            'themes' => Theme::query()->where('is_active', true)->orderBy('sort_order')->get(),
+            'themes' => Theme::query()->where('is_active', true)->where('is_home_theme', false)->orderBy('sort_order')->get(),
             'legal' => Setting::getValue('legal_details', []),
         ]);
     }
@@ -90,7 +100,7 @@ class CatalogController extends Controller
 
         return view('catalog.product', [
             'product' => $product,
-            'themes' => Theme::query()->where('is_active', true)->orderBy('sort_order')->get(),
+            'themes' => Theme::query()->where('is_active', true)->where('is_home_theme', false)->orderBy('sort_order')->get(),
             'legal' => Setting::getValue('legal_details', []),
         ]);
     }

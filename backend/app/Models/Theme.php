@@ -13,6 +13,7 @@ class Theme extends Model
         'slug',
         'description',
         'banner_url',
+        'is_home_theme',
         'layout_columns',
         'sort_order',
         'is_active',
@@ -21,6 +22,7 @@ class Theme extends Model
 
     protected $casts = [
         'is_active' => 'boolean',
+        'is_home_theme' => 'boolean',
         'layout_config' => 'array',
     ];
 

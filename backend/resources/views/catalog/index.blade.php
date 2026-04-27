@@ -67,8 +67,22 @@
                     Перейти в каталог
                 </a>
             </div>
-            <div class="flex h-72 items-center justify-center md:h-96">
-                <img src="{{ url('/t-shirt.png') }}" alt="Футболка CultBear" class="max-h-full w-auto object-contain">
+            <div class="flex h-auto items-center justify-center md:h-96">
+                @if($homeTheme)
+                    <a href="/themes/{{ $homeTheme->slug }}" class="home-card w-full max-w-md">
+                        <div class="home-card-media">
+                            @if($homeTheme->banner_src)
+                                <img src="{{ $homeTheme->banner_src }}" alt="{{ $homeTheme->name }}" class="aspect-[16/10] w-full object-cover">
+                            @else
+                                <div class="aspect-[16/10] w-full bg-zinc-200"></div>
+                            @endif
+                        </div>
+                        <h3 class="home-card-title">{{ $homeTheme->name }}</h3>
+                        <p class="home-card-description">{{ $homeTheme->description ?? 'Главная тематика CultBear.' }}</p>
+                    </a>
+                @else
+                    <img src="{{ url('/t-shirt.png') }}" alt="Футболка CultBear" class="max-h-full w-auto object-contain">
+                @endif
             </div>
         </div>
     </section>

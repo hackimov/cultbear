@@ -5,6 +5,7 @@ namespace App\Filament\Resources;
 use App\Filament\Resources\Concerns\HasAccusativeCreateTitle;
 use App\Filament\Resources\ThemeResource\Pages;
 use App\Models\Theme;
+use Illuminate\Database\Eloquent\Builder;
 use Filament\Forms;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
@@ -32,33 +33,41 @@ class ThemeResource extends Resource
 
     protected static ?string $navigationLabel = 'Тематики';
 
-    protected static ?int $navigationSort = 4;
+    protected static ?int $navigationSort = 5;
+
+    /**
+     * @return array<int, Forms\Components\Component>
+     */
+    public static function getThemeFormSchema(): array
+    {
+        return [
+            Forms\Components\TextInput::make('name')->label('Название')->required()->maxLength(255),
+            Forms\Components\TextInput::make('slug')->label('Slug (URL)')->required()->unique(ignoreRecord: true),
+            Forms\Components\Textarea::make('description')->label('Описание')->rows(3),
+            Forms\Components\FileUpload::make('banner_url')
+                ->label('Баннер')
+                ->helperText('JPEG, PNG или WebP.')
+                ->image()
+                ->disk('s3')
+                ->directory('themes/banners')
+                ->visibility('public')
+                ->acceptedFileTypes(['image/jpeg', 'image/png', 'image/webp'])
+                ->maxSize(10240)
+                ->nullable(),
+            Forms\Components\Select::make('layout_columns')
+                ->label('Колонок в сетке')
+                ->placeholder('Выберите сетку')
+                ->options([2 => '2 колонки', 3 => '3 колонки', 4 => '4 колонки'])
+                ->required(),
+            Forms\Components\TextInput::make('sort_order')->label('Порядок сортировки')->numeric()->default(0)->required(),
+            Forms\Components\Toggle::make('is_active')->label('Активна')->default(true),
+        ];
+    }
 
     public static function form(Form $form): Form
     {
         return $form
-            ->schema([
-                Forms\Components\TextInput::make('name')->label('Название')->required()->maxLength(255),
-                Forms\Components\TextInput::make('slug')->label('Slug (URL)')->required()->unique(ignoreRecord: true),
-                Forms\Components\Textarea::make('description')->label('Описание')->rows(3),
-                Forms\Components\FileUpload::make('banner_url')
-                    ->label('Баннер')
-                    ->helperText('JPEG, PNG или WebP.')
-                    ->image()
-                    ->disk('s3')
-                    ->directory('themes/banners')
-                    ->visibility('public')
-                    ->acceptedFileTypes(['image/jpeg', 'image/png', 'image/webp'])
-                    ->maxSize(10240)
-                    ->nullable(),
-                Forms\Components\Select::make('layout_columns')
-                    ->label('Колонок в сетке')
-                    ->placeholder('Выберите сетку')
-                    ->options([2 => '2 колонки', 3 => '3 колонки', 4 => '4 колонки'])
-                    ->required(),
-                Forms\Components\TextInput::make('sort_order')->label('Порядок сортировки')->numeric()->default(0)->required(),
-                Forms\Components\Toggle::make('is_active')->label('Активна')->default(true),
-            ]);
+            ->schema(static::getThemeFormSchema());
     }
 
     public static function table(Table $table): Table
@@ -93,6 +102,12 @@ class ThemeResource extends Resource
         return [
             //
         ];
+    }
+
+    public static function getEloquentQuery(): Builder
+    {
+        return parent::getEloquentQuery()
+            ->where('is_home_theme', false);
     }
 
     public static function getPages(): array
