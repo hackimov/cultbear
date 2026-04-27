@@ -2,6 +2,7 @@
 
 namespace App\Filament\Resources;
 
+use App\Filament\Resources\Concerns\HasAccusativeCreateTitle;
 use App\Filament\Resources\HomeThemeResource\Pages;
 use App\Models\Theme;
 use Illuminate\Database\Eloquent\Builder;
@@ -12,19 +13,26 @@ use Filament\Tables\Table;
 
 class HomeThemeResource extends Resource
 {
+    use HasAccusativeCreateTitle;
+
     protected static ?string $model = Theme::class;
 
     protected static ?string $recordTitleAttribute = 'name';
 
     protected static ?string $navigationIcon = 'heroicon-o-star';
 
-    protected static ?string $modelLabel = 'Главная тематика';
+    protected static ?string $modelLabel = 'главная тематика';
 
-    protected static ?string $pluralModelLabel = 'Главная тематика';
+    protected static ?string $pluralModelLabel = 'главные тематики';
 
     protected static ?string $navigationLabel = 'Главная тематика';
 
-    protected static ?int $navigationSort = 4;
+    protected static ?int $navigationSort = 6;
+
+    protected static function createAccusativeLabel(): ?string
+    {
+        return 'главную тематику';
+    }
 
     public static function form(Form $form): Form
     {

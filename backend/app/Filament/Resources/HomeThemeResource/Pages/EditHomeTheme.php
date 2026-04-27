@@ -10,6 +10,11 @@ class EditHomeTheme extends EditRecord
 {
     protected static string $resource = HomeThemeResource::class;
 
+    public function getTitle(): string
+    {
+        return 'Редактировать главную тематику';
+    }
+
     /**
      * @param  array<string, mixed>  $data
      * @return array<string, mixed>

@@ -9,6 +9,11 @@ class CreateHomeTheme extends BaseCreateRecord
 {
     protected static string $resource = HomeThemeResource::class;
 
+    public function getTitle(): string
+    {
+        return 'Создать главную тематику';
+    }
+
     /**
      * @param  array<string, mixed>  $data
      * @return array<string, mixed>
