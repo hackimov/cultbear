@@ -61,7 +61,7 @@
         <div class="mx-auto grid max-w-7xl gap-8 px-4 py-16 md:grid-cols-2 md:py-24">
             <div>
                 <img src="{{ url('/logo-without-text.svg') }}" alt="CultBear" width="350" height="345" class="mb-4 block">
-                <h1 class="text-4xl font-black leading-tight md:text-5xl">Футболки с символикой России</h1>
+                <h1 class="text-4xl font-black leading-tight md:text-5xl">Cultbear - патриотизм начинается с тебя</h1>
                 <p class="mt-4 max-w-xl text-zinc-700">Современный каталог с акцентом на черные модели, качественную печать и удобный заказ онлайн.</p>
                 <a href="{{ $themes->first() ? '/themes/'.$themes->first()->slug : '#' }}" class="mt-8 inline-block rounded bg-black px-6 py-3 text-sm font-semibold text-white">
                     Перейти в каталог
