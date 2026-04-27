@@ -52,7 +52,6 @@ class CatalogController extends Controller
     {
         $themes = Theme::query()
             ->where('is_active', true)
-            ->where('is_home_theme', false)
             ->orderBy('sort_order')
             ->get();
 
